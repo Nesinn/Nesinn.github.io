@@ -1,0 +1,73 @@
+/* My Universial styles for all pages */
+a {
+  background-color: midnightblue;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  margin: 1rem;
+  padding: 1rem;
+  transition: background-color 0.7s linear 0.1s;
+}
+
+a:hover {
+  background-color: steelblue;
+}
+
+/* For this paticular page */
+
+body {
+  cursor: default;
+	background-color: gray; /* well you choose it, had it like this to see the toolbar more clearly */
+  max-width: 100%; /* To make sure content does not go bigger then screen size */
+  font-size: 2rem;
+}
+
+.toolbar {
+	background-color: white; /* Duuhh */
+  display: flex; /* So you can use flex (justify-content) */
+  justify-content: space-around; /* split into 2 secrions */
+  align-items: center; /* So the items are in the center vertically in the toolbar */
+  height: 4rem; /* The height the toolbar takes */
+  position: fixed; /* Does not scroll with page */
+  width: 100%; /* So it takes the page-width */
+  z-index: 1; /* To make it overflow the page content */
+}
+
+#date {
+  font-weight: bold;
+}
+
+#page {
+  padding-top: 7rem;
+  display: flex;
+  justify-content: flex-start;
+  flex-flow: column;
+}
+
+/* Menu */
+.menu {
+  align-self: center;
+  background-color: teal;
+  border-radius: 2rem;
+  display: flex;
+  flex-flow: row;
+}
+.menu a {
+
+}
+
+/* Heimahjalp */
+.dagskra {
+  padding-top: 12rem;/* 4rem; /* To make the top of the page not go under the toolbar */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.arrow {
+  font-size: 7rem;
+  color: lightgray;
+}
+.arrow:hover {
+  color: steelblue;
+}
