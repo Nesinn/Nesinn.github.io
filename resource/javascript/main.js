@@ -4,26 +4,26 @@ $(document).ready(function() {
   startClock();
 
   //-- Start with displaying the menu.
-  display("Menu");
+  display();
 
   //if user clicks Menu button.
   $("#Menu").click(function(){
     //since he clicked the menu, display the menu.
     display("Menu");
   });
-  console.log(window.location.href - "https://nesinn.github.io/");
 });
 
 // --  Login Factor  --
-var loggedIn = false;
+var loggedIn = true;
 
 
 // Menu
 var menu = false;
 
-function display(x) {
+function display() {
   if(loggedIn){
-    if(x === "Menu"){
+    var path = window.location.href.split('?')[1];
+    if(path === undefined){
       // I dont want multible menues on the page
       if(!menu) {
         var heimahjalp = "<a href=\"#\" class=\"homeHelp\">Heimahjalp</a>";
@@ -44,7 +44,7 @@ function display(x) {
       $("#page").empty();
       menu = false;
     }
-    if(x === "Heimahjalp") {
+    if(path === "Heimahjalp") {
       //Put up heimahjalp page.
       $("#page").append("<div class=\"dagskra\"><div class=\"arrow\"><p>&#8249;</p></div><div id=\"calendar\"><div class=\"day\"><p>Morgunmatur:<span class=\"breakfast\"></span></p><p>Nesti:<span class=\"lunchbox\"></span></p><p>Kv&ouml;ldmatur:<span class=\"dinner\"></span></p><p>Verkefni:<span class=\"project\"></span></p></div></div><div class=\"arrow\"><p>&#8250;</p></div></div>");
       //if user clicks arrow, we need to change the date.
@@ -56,7 +56,7 @@ function display(x) {
         //since he clicked the right arrow go ahead a day.
         tomorrow();
       });
-    } else if (x === "Hreifihjalp") {
+    } else if (path === "Hreifihjalp") {
       $("#page").append("<a href=\"#\" class=\"klukk\"><span id=\"timer\">Start Klukk</span></a>");
       $("a.klukk").on('click', function(e){
         //Start/stop the excersise clock
@@ -64,8 +64,7 @@ function display(x) {
       });
     }
   } else {
-    loggedIn = true;
-    display("Menu");
+    //display the login screen
   }
 }
 
