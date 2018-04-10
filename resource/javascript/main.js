@@ -11,7 +11,7 @@ $(document).ready(function() {
     //since he clicked the menu, display the menu.
     display("Menu");
   });
-
+  console.log(window.location.href - "https://nesinn.github.io/");
 });
 
 // --  Login Factor  --
