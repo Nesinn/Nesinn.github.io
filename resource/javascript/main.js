@@ -7,7 +7,60 @@ $(document).ready(function() {
 
 // -- Calendar --
 var Calendar = {
-
+  //Names of the months in Icelandic
+  iceMonths : ["Janúar", "Febrúar", "Mars", "Apríl", "Maí", "Juní", "Julí", "Ágúst", "September", "Október", "Nóvember", "Desember"],
+  //Names of the Days in Icelandic
+  iceDays : ["Sunnudagur", "Mánudagur", "Þriðjudagur", "Miðvikudagur", "Fimtudagur", "Föstudagur", "Laugardagur"],
+  //Ruturns Day of Week Day og month and month
+  getDayMdayMonth : function(newDate){
+    return this.iceDays[newDate.getDay()] + " " + newDate.getDate() + ". " + this.iceMonths[newDate.getMonth()];
+  },
+  //Returns hour:min:sec of NOW
+  getClock : function(){
+    var today = new Date();
+    var h = today.getHours();
+    var m = today.getMinutes();
+    var s = today.getSeconds();
+    if(m < 10) {
+      m = "0" + m;
+    }
+    if(s < 10) {
+      s = "0" + s;
+    }
+    return (h + ":" + m + ":" + s);
+  },
+  // returns the day before given date.
+  yesterday : function(date) {
+    if(date.getDate() === 1) {
+      //First day of the month, so yesterday would be previous month.
+      if(date.getMonth() === 0) {
+        //if its January we need to change the year.
+        return (new Date(date.getYear() + 1899, 12, 0));
+      } else {
+        //it's not January, so only change month.
+        return (new Date(date.getYear() + 1900, date.getMonth(), 0));
+      }
+    } else {
+      //it's not the first day of the month.
+      return (new Date(date.getYear() + 1900, date.getMonth(), date.getDate() - 1));
+    }
+  },
+  // returns the day after given date.
+  tomorrow : function(date) {
+    //if its the last day of the month, change month
+    if(date.getDate() === 0) {
+      //if the month is Desember, also change the year
+      if(date.getMonth() === 12) {
+        return (new Date(date.getYear() + 1901, 1, 1));
+      } else {
+        //last day of the month, but not Desember
+        return (new Date(date.getYear() + 1900, date.getMonth() + 1, 1));
+      }
+    } else {
+      //not the last day of the month.
+      return (new Date(date.getYear() + 1900, date.getMonth(), date.getDate() + 1));
+    }
+  }
 };
 
 // -- Data Base --
@@ -130,12 +183,13 @@ var Menu = {
 
 //Heimahjalp page object
 var HomeHelp = {
+  displayDay : "",
   display : function() {
     var userID = -1;
     //We need the username before setting up the page
     var username = window.location.href.split('?')[2];
     if(username === undefined){
-      //display create new user window
+      //display create new user window, there was no user in the path
     } else {
       userID = DATABASE.USER.userExists(username);
     }
@@ -153,25 +207,28 @@ var HomeHelp = {
       //if user clicks arrow, we need to change the date.
       $("div.arrow:first").on('click', function(e){
         //since he clicked the left arrow go back a day.
-        yesterday();
+        HomeHelp.setDay(Calendar.yesterday(displayDay));
       });
       $("div.arrow:last").on('click', function(e){
         //since he clicked the right arrow go ahead a day.
-        tomorrow();
+        HomeHelp.setDay(Calendar.tomorrow(displayDay));
       });
-      setDay(new Date);
-      this.setDinner(new Date);
-    } else {}
-  },
-    
-    date : {
-      name : "",
-      date : "",
-      dinner : ""
-    },
-    setDinner : function(date){
-      //$(".dinner").append(this.dinner[0].name);
+      displayDay = new Date;
+      this.setDay(displayDay);
+      this.setDinner(displayDay);
+    } else {
+      //user does not exist
     }
+  },  
+  setDinner : function(date){
+    //$(".dinner").append(this.dinner[0].name);
+  },
+  //gets a date and changes accoringly.
+  setDay : function(date) {
+    //check newDate if it is a date!
+    displayDay = date;
+    $("#date").text(Calendar.getDayMdayMonth(displayDay));
+  }
 };
 
 var MoveHelp = {
@@ -209,21 +266,10 @@ if (typeof(Storage) !== "undefined") {
     //$(".result").text("Sorry, your browser does not support Web Storage...")
 }
 */
-
+/*
 // Klukk
 function startClock() {
-  var today = new Date();
-  var h = today.getHours();
-  var m = today.getMinutes();
-  var s = today.getSeconds();
-  if(m < 10) {
-    m = "0" + m;
-  }
-  if(s < 10) {
-    s = "0" + s;
-  }
-  sec = s;
-  $("#clock").text(h + ":" + m + ":" + s);
+  $("#clock").text(Calendar.getClock());
   var t = setTimeout(startClock, 500);
 };
 
@@ -234,7 +280,9 @@ var play = true;
 var fastTime = 11;
 var slowTime = 7;
 var speed = true;
+*/
 
+/*
 function countDown() {
   if(clock) {
     if(speed){
@@ -269,57 +317,4 @@ function beatTimer() {
     countDown();
   }
 }
-
-
-// --  Everything Belonging to Calendar and date below here  --
-
-//this is today date.
-var date = new Date();
-
-//Names of the months in Icelandic
-var iceMonths = ["Janúar", "Febrúar", "Mars", "Apríl", "Maí", "Juní", "Julí", "Ágúst", "September", "Október", "Nóvember", "Desember"];
-
-//Names of the Days in Icelandic
-var iceDays = ["Sunnudagur", "Mánudagur", "Þriðjudagur", "Miðvikudagur", "Fimtudagur", "Föstudagur", "Laugardagur"];
-
-// When user clicks back arrow, change date to the day before.
-function yesterday() {
-  if(date.getDate() === 1) {
-    //First day of the month, so yesterday would be previous month.
-    if(date.getMonth() === 0) {
-      //if its January we need to change the year.
-      return setDay(new Date(date.getYear() + 1899, 12, 0));
-    } else {
-      //it's not January, so only change month.
-      return setDay(new Date(date.getYear() + 1900, date.getMonth(), 0));
-    }
-  } else {
-    //it's not the first day of the month.
-    return setDay(new Date(date.getYear() + 1900, date.getMonth(), date.getDate() - 1));
-  }
-}
-
-// When user clicks front arrow, change date to the day after.
-function tomorrow() {
-  //if its the last day of the month, change month
-  if(date.getDate() === 0) {
-    //if the month is Desember, also change the year
-    if(date.getMonth() === 12) {
-      return setDay(new Date(date.getYear() + 1901, 1, 1));
-    } else {
-      //last day of the month, but not Desember
-      return setDay(new Date(date.getYear() + 1900, date.getMonth() + 1, 1));
-    }
-  } else {
-    //not the last day of the month.
-    return setDay(new Date(date.getYear() + 1900, date.getMonth(), date.getDate() + 1));
-  }
-}
-
-//gets a date and changes accoringly.
-function setDay(newDate) {
-  //check newDate if it is a date!
-  date = newDate;
-  $("#date").text(iceDays[date.getDay()] + " " + date.getDate() + ". " + iceMonths[date.getMonth()]);
-  return;
-}
+*/
