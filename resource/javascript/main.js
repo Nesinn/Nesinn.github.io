@@ -1,27 +1,119 @@
 $(document).ready(function() {
   //Get the page we want to display and load.
   var page = getPage();
-
   //Append the page to the site
   page.display();
 });
 
-// --  Login Factor  --
-var User = {
-  name : "Kambhóll",
-  password : "12345",
-  lastLogin : Date,
-  ip : 0,
-  login : function(){
-    this.lastLogin = new Date;
-    this.ip = 123456789;
-  },
-  loggedIn : function(){
+// -- Calendar --
+var Calendar = {
+
+};
+
+// -- Data Base --
+var DATABASE = {
+  USER : {
+    name : ["Kambholl"],
+    password : ["12345"],
+    lastLogin : ["Wed Apr 11 2018 13:07:57 GMT+0000 (Greenwich Standard Time)"],
+    ip : 0,
+    userExists : function(username){
+      for(var i = 0 ; i < this.name.length ; i++){
+        if(this.name[i] === username){
+          return i;
+        }
+      }
+      return -1;
+    },
+    login : function(username, password){
+      var id = this.userExists(username)
+      if(id >= 0){
+        if(this.password[id] === password){
+          return id;
+        }
+      }
+      return -1;
+    },
+    loggedIn : function(id){
     var ONE_HOUR = 3600000; /* ms */
-    if(this.ip === 123456789 && ((new Date) - this.lastLogin) < ONE_HOUR){
+    if((new Date - this.lastLogin[id]) < ONE_HOUR){
       return true;
     } else {
       return false;
+    }
+  }
+  },
+  HOMEHELP : {
+    shoppingListItems : {
+      mainIngrediant : ["Fiskur", "Kjúklingur", "Kjöt", "Pasta"],
+      vegetables : ["kál", "gúrka", "tómatar", "laukur", "papríka", "karteflur"],
+      sauce : ["tómatsósa", "sinnep", "kokteilsósa", "köld bernessósa", "piparsósa", "hvítlaukssósa"],
+      spice : ["rasp", "kjúklingakridd", "Aromat"],
+      sideDish : ["franskar"],
+      bathroomItems : ["tannkrem", "klósettpappír", "Sturtusápa", "Handsápa"]
+    },
+    dinner : [{ name : "Kjúklingaréttur", ingredients : []},
+              { name : "Makkarónuréttur", ingredients : []},
+              { name : "Soðin Fiskur", ingredients : []},
+              { name : "Samlokur", ingredients : []},
+              { name : "Tortilla", ingredients : []},
+              { name : "Svínahnakkar", ingredients : []},
+              { name : "Kjúklingabitar", ingredients : []},
+              { name : "Bjúga", ingredients : []},
+              { name : "Lasagnette", ingredients : []},
+              { name : "Fiskur í Karrý", ingredients : []},
+              { name : "Píta", ingredients : []},
+              { name : "Pylsur og kjúklingur í pylsubrauði", ingredients : []},
+              { name : "Grillkjöt", ingredients : []},
+              { name : "Gordon Blu", ingredients : []},
+              { name : "Gúllas og pasta", ingredients : []},
+              { name : "Kjötbollur", ingredients : []},
+              { name : "Kjúklingapasta", ingredients : []},
+              { name : "Langtbrauð", ingredients : []},
+              { name : "Gúllas og hrísgrjón", ingredients : []},
+              { name : "Skyr", ingredients : []},
+              { name : "Hakk og spagettí", ingredients : []},
+              { name : "Ofnafisk réttur", ingredients : []},
+              { name : "Naggar", ingredients : []},
+              { name : "Pizza", ingredients : []},
+              { name : "Hakkbollur", ingredients : []},
+              { name : "Tikamasala Kjúklingaréttur", ingredients : []},
+              { name : "Medisterpylsa og spagetti", ingredients : []},
+              { name : "Steiktur Fiskur í raspi", ingredients : []},
+              { name : "Slátur", ingredients : []},
+              { name : "Mjólkurgrautur", ingredients : []},
+              { name : "Súpa og brauð", ingredients : []},
+              { name : "Hamborgarar", ingredients : []},
+              { name : "Læri", ingredients : []},
+              { name : "Bæjonesskinka", ingredients : []},
+            ],
+    USER: [{
+      startDate: "Wed Apr 11 2018 13:07:57 GMT+0000 (Greenwich Standard Time)",
+      dinnerPlans: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+    }]
+  }
+};
+
+// --  Login Factor  --
+var User = {
+  id : 0,
+  name : "",
+  ip : 0,
+  homeHelpValues : [{
+    startDate: Date,
+    dinnerPlans: []
+  }],
+  login : function(username, password){
+    var id =DATABASE.USER.login(username, password)
+    if(id >= 0){
+      DATABASE.USER.lastLogin[this.id] = new Date;
+      this.id = id;
+      this.name = DATABASE.USER.name[id];
+      this.ip = 123456789;
+      this.homeHelpValues.startDate = DATABASE.USER.homeHelpValues.startDate[id];
+      this.homeHelpValues.dinnerPlans = DATABASE.USER.homeHelpValues.dinnerPlans[id];
+    } else {
+      //display error message. wrong usernmae / password
     }
   }
 };
@@ -39,80 +131,47 @@ var Menu = {
 //Heimahjalp page object
 var HomeHelp = {
   display : function() {
-    //Put up heimahjalp page.
-    var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
-    var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
-    var breakfast = "<p>Morgunmatur: <span class=\"breakfast\"></span></p>";
-    var lunchbox = "<p>Nesti :<span class=\"lunchbox\"></span></p>";
-    var dinner = "<p>Kv&ouml;ldmatur: <span class=\"dinner\"></span></p>";
-    var project = "<p>Verkefni: <span class=\"project\"></span></p>";
-    var day = "<div class=\"day\">" + breakfast + lunchbox + dinner + project + "</div>";
-    var dagskra = "<div class=\"dagskra\">" + leftArrow + day + rightArrow + "</div>";
-    $("#page").append(dagskra);
-    //if user clicks arrow, we need to change the date.
-    $("div.arrow:first").on('click', function(e){
-      //since he clicked the left arrow go back a day.
-      yesterday();
-    });
-    $("div.arrow:last").on('click', function(e){
-      //since he clicked the right arrow go ahead a day.
-      tomorrow();
-    });
-    setDay(new Date);
-    this.setDinner(new Date);
+    var userID = -1;
+    //We need the username before setting up the page
+    var username = window.location.href.split('?')[2];
+    if(username === undefined){
+      //display create new user window
+    } else {
+      userID = DATABASE.USER.userExists(username);
+    }
+    if(userID <= 0){
+      //Put up heimahjalp page.
+      var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
+      var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
+      var breakfast = "<p>Morgunmatur: <span class=\"breakfast\"></span></p>";
+      var lunchbox = "<p>Nesti :<span class=\"lunchbox\"></span></p>";
+      var dinner = "<p>Kv&ouml;ldmatur: <span class=\"dinner\"></span></p>";
+      var project = "<p>Verkefni: <span class=\"project\"></span></p>";
+      var day = "<div class=\"day\">" + breakfast + lunchbox + dinner + project + "</div>";
+      var dagskra = "<div class=\"dagskra\">" + leftArrow + day + rightArrow + "</div>";
+      $("#page").append(dagskra);
+      //if user clicks arrow, we need to change the date.
+      $("div.arrow:first").on('click', function(e){
+        //since he clicked the left arrow go back a day.
+        yesterday();
+      });
+      $("div.arrow:last").on('click', function(e){
+        //since he clicked the right arrow go ahead a day.
+        tomorrow();
+      });
+      setDay(new Date);
+      this.setDinner(new Date);
+    } else {}
   },
-  shoppingListItems : {
-    mainIngrediant : ["Fiskur", "Kjúklingur", "Kjöt", "Pasta"],
-    vegetables : ["kál", "gúrka", "tómatar", "laukur", "papríka", "karteflur"],
-    sauce : ["tómatsósa", "sinnep", "kokteilsósa", "köld bernessósa", "piparsósa", "hvítlaukssósa"],
-    spice : ["rasp", "kjúklingakridd", "Aromat"],
-    sideDish : ["franskar"],
-    bathroomItems : ["tannkrem", "klósettpappír", "Sturtusápa", "Handsápa"]
-  },
-  dinner : [{ name : "Kjúklingaréttur", ingredients : []},
-            { name : "Makkarónuréttur", ingredients : []},
-            { name : "Soðin Fiskur", ingredients : []},
-            { name : "Samlokur", ingredients : []},
-            { name : "Tortilla", ingredients : []},
-            { name : "Svínahnakkar", ingredients : []},
-            { name : "Kjúklingabitar", ingredients : []},
-            { name : "Bjúga", ingredients : []},
-            { name : "Lasagnette", ingredients : []},
-            { name : "Fiskur í Karrý", ingredients : []},
-            { name : "Píta", ingredients : []},
-            { name : "Pylsur og kjúklingur í pylsubrauði", ingredients : []},
-            { name : "Grillkjöt", ingredients : []},
-            { name : "Gordon Blu", ingredients : []},
-            { name : "Gúllas og pasta", ingredients : []},
-            { name : "Kjötbollur", ingredients : []},
-            { name : "Kjúklingapasta", ingredients : []},
-            { name : "Langtbrauð", ingredients : []},
-            { name : "Gúllas og hrísgrjón", ingredients : []},
-            { name : "Skyr", ingredients : []},
-            { name : "Hakk og spagettí", ingredients : []},
-            { name : "Ofnafisk réttur", ingredients : []},
-            { name : "Naggar", ingredients : []},
-            { name : "Pizza", ingredients : []},
-            { name : "Hakkbollur", ingredients : []},
-            { name : "Tikamasala Kjúklingaréttur", ingredients : []},
-            { name : "Medisterpylsa og spagetti", ingredients : []},
-            { name : "Steiktur Fiskur í raspi", ingredients : []},
-            { name : "Slátur", ingredients : []},
-            { name : "Mjólkurgrautur", ingredients : []},
-            { name : "Súpa og brauð", ingredients : []},
-            { name : "Hamborgarar", ingredients : []},
-            { name : "Læri", ingredients : []},
-            { name : "Bæjonesskinka", ingredients : []},
-          ],
-  date : {
-    name : "",
-    date : "",
-    dinner : ""
-  },
-  setDinner : function(date){
-    $(".dinner").append(this.dinner[0].name);
-  }
-
+    
+    date : {
+      name : "",
+      date : "",
+      dinner : ""
+    },
+    setDinner : function(date){
+      //$(".dinner").append(this.dinner[0].name);
+    }
 };
 
 var MoveHelp = {
@@ -137,8 +196,9 @@ function getPage() {
   } else {
     return Menu;
   }
-}
+};
 
+/*
 // Check browser support
 if (typeof(Storage) !== "undefined") {
     // Store
@@ -148,7 +208,7 @@ if (typeof(Storage) !== "undefined") {
 } else {
     //$(".result").text("Sorry, your browser does not support Web Storage...")
 }
-
+*/
 
 // Klukk
 function startClock() {
