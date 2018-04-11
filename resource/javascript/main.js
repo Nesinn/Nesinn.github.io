@@ -1,4 +1,12 @@
 $(document).ready(function() {
+  //Get the page we want to display and load.
+  var page = getPage();
+
+  //Append the page to the site
+  page.display();
+
+
+  /*  No more in use, start again!
   //Start the page on today.
   setDay(date);
   startClock();
@@ -11,63 +19,64 @@ $(document).ready(function() {
     //since he clicked the menu, display the menu.
     display("Menu");
   });
+  */
 });
 
-// --  Login Factor  --
-var loggedIn = true;
+//Menu page object
+var Menu = {
+  display : function() {
+    var heimahjalp = "<a href=\"https://nesinn.github.io/?heimahjalp\">Heimahjalp</a>";
+    var hreyfihjalp = "<a href=\"https://nesinn.github.io/?hreifihjalp\">Hreyfihjalp</a>";
+    var googledocs = "<a href=\"https:\/\/docs.google.com/document/d/1Y13UHfQHlWZ8VoAYb-OfVyFA-VGcokouLb4m-34KQHk/edit#heading=h.q71z80o3nmah\">Codecskjalid</a>"
+    $("#page").append("<div class=\"menu\">" + heimahjalp + hreyfihjalp + googledocs + "</div>");
+  }
+};
 
+//Heimahjalp page object
+var HomeHelp = {
+  display : function() {
+    //Put up heimahjalp page.
+    $("#page").append("<div class=\"dagskra\"><div class=\"arrow\"><p>&#8249;</p></div><div id=\"calendar\"><div class=\"day\"><p>Morgunmatur:<span class=\"breakfast\"></span></p><p>Nesti:<span class=\"lunchbox\"></span></p><p>Kv&ouml;ldmatur:<span class=\"dinner\"></span></p><p>Verkefni:<span class=\"project\"></span></p></div></div><div class=\"arrow\"><p>&#8250;</p></div></div>");
+    //if user clicks arrow, we need to change the date.
+    $("div.arrow:first").on('click', function(e){
+      //since he clicked the left arrow go back a day.
+      yesterday();
+    });
+    $("div.arrow:last").on('click', function(e){
+      //since he clicked the right arrow go ahead a day.
+      tomorrow();
+    });
+    startClock();
+    setDay(new Date);
+  }
+};
 
-// Menu
-var menu = false;
-
-function display() {
-  if(loggedIn){
-    var path = window.location.href.split('?')[1];
-    if(path === undefined){
-      // I dont want multible menues on the page
-      if(!menu) {
-        var heimahjalp = "<a href=\"#\" class=\"homeHelp\">Heimahjalp</a>";
-        var hreyfihjalp = "<a href=\"#\" class=\"hreyfihjalp\">Hreyfihjalp</a>";
-        var googledocs = "<a href=\"https:\/\/docs.google.com/document/d/1Y13UHfQHlWZ8VoAYb-OfVyFA-VGcokouLb4m-34KQHk/edit#heading=h.q71z80o3nmah\">Codecskjalid</a>"
-        $("#page").append("<div class=\"menu\">" + heimahjalp + hreyfihjalp + googledocs + "</div>");
-        menu = true;
-        $("a.homeHelp").on('click', function(e){
-          //if user clicks heimahjalp anchor.
-          display("Heimahjalp");
-        });
-        $("a.hreyfihjalp").on('click', function(e){
-          display("Hreifihjalp");
-        });
-      }
-    } else {
-      // We are going to display something other then manu. We will allways remove the menu.
-      $("#page").empty();
-      menu = false;
-    }
-    if(path === "Heimahjalp") {
-      //Put up heimahjalp page.
-      $("#page").append("<div class=\"dagskra\"><div class=\"arrow\"><p>&#8249;</p></div><div id=\"calendar\"><div class=\"day\"><p>Morgunmatur:<span class=\"breakfast\"></span></p><p>Nesti:<span class=\"lunchbox\"></span></p><p>Kv&ouml;ldmatur:<span class=\"dinner\"></span></p><p>Verkefni:<span class=\"project\"></span></p></div></div><div class=\"arrow\"><p>&#8250;</p></div></div>");
-      //if user clicks arrow, we need to change the date.
-      $("div.arrow:first").on('click', function(e){
-        //since he clicked the left arrow go back a day.
-        yesterday();
-      });
-      $("div.arrow:last").on('click', function(e){
-        //since he clicked the right arrow go ahead a day.
-        tomorrow();
-      });
-    } else if (path === "Hreifihjalp") {
-      $("#page").append("<a href=\"#\" class=\"klukk\"><span id=\"timer\">Start Klukk</span></a>");
+var MoveHelp = {
+  display : function() {
+    $("#page").append("<a href=\"#\" class=\"klukk\"><span id=\"timer\">Start Klukk</span></a>");
       $("a.klukk").on('click', function(e){
         //Start/stop the excersise clock
         beatTimer();
       });
-    }
+  }
+};
+
+//Returns the Page object, acording to the path. If invalid or empty return menu
+function getPage() {
+  var path = window.location.href.split('?')[1];
+  if(path === undefined){
+    return Menu;
+  } else if(path === "heimahjalp"){
+    return HomeHelp;
+  } else if(path === "hreifihjalp"){
+    return MoveHelp;
   } else {
-    //display the login screen
+    return Menu;
   }
 }
 
+// --  Login Factor  --
+var loggedIn = true;
 
 // Check browser support
 if (typeof(Storage) !== "undefined") {
