@@ -4,23 +4,27 @@ $(document).ready(function() {
 
   //Append the page to the site
   page.display();
-
-
-  /*  No more in use, start again!
-  //Start the page on today.
-  setDay(date);
-  startClock();
-
-  //-- Start with displaying the menu.
-  display();
-
-  //if user clicks Menu button.
-  $("#Menu").click(function(){
-    //since he clicked the menu, display the menu.
-    display("Menu");
-  });
-  */
 });
+
+// --  Login Factor  --
+var User = {
+  name : "Kambhóll",
+  password : "12345",
+  lastLogin : Date,
+  ip : 0,
+  login : function(){
+    this.lastLogin = new Date;
+    this.ip = 123456789;
+  },
+  loggedIn : function(){
+    var ONE_HOUR = 3600000; /* ms */
+    if(this.ip === 123456789 && ((new Date) - this.lastLogin) < ONE_HOUR){
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
 
 //Menu page object
 var Menu = {
@@ -36,7 +40,15 @@ var Menu = {
 var HomeHelp = {
   display : function() {
     //Put up heimahjalp page.
-    $("#page").append("<div class=\"dagskra\"><div class=\"arrow\"><p>&#8249;</p></div><div id=\"calendar\"><div class=\"day\"><p>Morgunmatur:<span class=\"breakfast\"></span></p><p>Nesti:<span class=\"lunchbox\"></span></p><p>Kv&ouml;ldmatur:<span class=\"dinner\"></span></p><p>Verkefni:<span class=\"project\"></span></p></div></div><div class=\"arrow\"><p>&#8250;</p></div></div>");
+    var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
+    var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
+    var breakfast = "<p>Morgunmatur: <span class=\"breakfast\"></span></p>";
+    var lunchbox = "<p>Nesti :<span class=\"lunchbox\"></span></p>";
+    var dinner = "<p>Kv&ouml;ldmatur: <span class=\"dinner\"></span></p>";
+    var project = "<p>Verkefni: <span class=\"project\"></span></p>";
+    var day = "<div class=\"day\">" + breakfast + lunchbox + dinner + project + "</div>";
+    var dagskra = "<div class=\"dagskra\">" + leftArrow + day + rightArrow + "</div>";
+    $("#page").append(dagskra);
     //if user clicks arrow, we need to change the date.
     $("div.arrow:first").on('click', function(e){
       //since he clicked the left arrow go back a day.
@@ -46,9 +58,61 @@ var HomeHelp = {
       //since he clicked the right arrow go ahead a day.
       tomorrow();
     });
-    startClock();
     setDay(new Date);
+    this.setDinner(new Date);
+  },
+  shoppingListItems : {
+    mainIngrediant : ["Fiskur", "Kjúklingur", "Kjöt", "Pasta"],
+    vegetables : ["kál", "gúrka", "tómatar", "laukur", "papríka", "karteflur"],
+    sauce : ["tómatsósa", "sinnep", "kokteilsósa", "köld bernessósa", "piparsósa", "hvítlaukssósa"],
+    spice : ["rasp", "kjúklingakridd", "Aromat"],
+    sideDish : ["franskar"],
+    bathroomItems : ["tannkrem", "klósettpappír", "Sturtusápa", "Handsápa"]
+  },
+  dinner : [{ name : "Kjúklingaréttur", ingredients : []},
+            { name : "Makkarónuréttur", ingredients : []},
+            { name : "Soðin Fiskur", ingredients : []},
+            { name : "Samlokur", ingredients : []},
+            { name : "Tortilla", ingredients : []},
+            { name : "Svínahnakkar", ingredients : []},
+            { name : "Kjúklingabitar", ingredients : []},
+            { name : "Bjúga", ingredients : []},
+            { name : "Lasagnette", ingredients : []},
+            { name : "Fiskur í Karrý", ingredients : []},
+            { name : "Píta", ingredients : []},
+            { name : "Pylsur og kjúklingur í pylsubrauði", ingredients : []},
+            { name : "Grillkjöt", ingredients : []},
+            { name : "Gordon Blu", ingredients : []},
+            { name : "Gúllas og pasta", ingredients : []},
+            { name : "Kjötbollur", ingredients : []},
+            { name : "Kjúklingapasta", ingredients : []},
+            { name : "Langtbrauð", ingredients : []},
+            { name : "Gúllas og hrísgrjón", ingredients : []},
+            { name : "Skyr", ingredients : []},
+            { name : "Hakk og spagettí", ingredients : []},
+            { name : "Ofnafisk réttur", ingredients : []},
+            { name : "Naggar", ingredients : []},
+            { name : "Pizza", ingredients : []},
+            { name : "Hakkbollur", ingredients : []},
+            { name : "Tikamasala Kjúklingaréttur", ingredients : []},
+            { name : "Medisterpylsa og spagetti", ingredients : []},
+            { name : "Steiktur Fiskur í raspi", ingredients : []},
+            { name : "Slátur", ingredients : []},
+            { name : "Mjólkurgrautur", ingredients : []},
+            { name : "Súpa og brauð", ingredients : []},
+            { name : "Hamborgarar", ingredients : []},
+            { name : "Læri", ingredients : []},
+            { name : "Bæjonesskinka", ingredients : []},
+          ],
+  date : {
+    name : "",
+    date : "",
+    dinner : ""
+  },
+  setDinner : function(date){
+    $(".dinner").append(this.dinner[0].name);
   }
+
 };
 
 var MoveHelp = {
@@ -74,9 +138,6 @@ function getPage() {
     return Menu;
   }
 }
-
-// --  Login Factor  --
-var loggedIn = true;
 
 // Check browser support
 if (typeof(Storage) !== "undefined") {

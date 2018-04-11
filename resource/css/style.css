@@ -26,7 +26,7 @@ body {
 .toolbar {
 	background-color: white; /* Duuhh */
   display: flex; /* So you can use flex (justify-content) */
-  justify-content: space-around; /* split into 2 secrions */
+  justify-content: center; /* split into 2 secrions */
   align-items: center; /* So the items are in the center vertically in the toolbar */
   height: 4rem; /* The height the toolbar takes */
   position: fixed; /* Does not scroll with page */
