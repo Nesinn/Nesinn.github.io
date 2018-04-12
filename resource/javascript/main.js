@@ -7,19 +7,18 @@ $(document).ready(function() {
 
 // -- Page --
 var Page = {
-  //Clears the current page.
-  clearPage : function(){
-    $("#page").empty();
-  },
   //Returns the Page object, acording to the path. If invalid or empty return menu
   getPage : function () {
     var path = window.location.href.split('?')[1];
+    $("#page").empty();
     if(path === undefined){
       return Menu;
     } else if(path === "heimahjalp"){
       return HomeHelp;
     } else if(path === "hreifihjalp"){
       return MoveHelp;
+    } else if(path === "user"){
+      return User;
     } else {
       return Menu;
     }
@@ -233,8 +232,7 @@ var User = {
       var psw = document.getElementsByTagName("input")[1].value;
       if(User.login(usr, psw)){
         //user is logged in. Clear screen and display Menu.
-        Page.clearPage();
-        Menu.display();
+        Page.getPage();
       } else {
         $(".login-error").text("-- Notendanafn ekki til og/eða rangt lykilorð --");
       }
@@ -305,8 +303,7 @@ var HomeHelp = {
         this.setDay(displayDay);
       } else {
         //display login screen, there was no user in the path and no user was logged in
-        Page.clearPage();
-        User.display();
+        window.location.href = "https://nesinn.github.io/?user";
       }
     },
   //gets a date and changes accoringly.
