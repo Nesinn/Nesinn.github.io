@@ -35,11 +35,12 @@ var Calendar = {
       return "" + num;
     }
   },
+  //Returns the date like social securaty number.
   getDayID : function(date){
     if(this.isDate(date)){
-      var d = "" + date.getDate();
+      var d = this.addZero(date.getDate());
       var m = this.addZero(date.getMonth() + 1);
-      var y = this.addZero(date.getYear() + 1900);
+      var y = (date.getYear() + 1900);
       return (d + m + y);
     } else {
       return date;
@@ -89,36 +90,48 @@ var Calendar = {
 
 // -- Data Base --
 var DATABASE = {
+  //Here we keep all the information about the user (when I say user, I don´t mean addict)
   USER : {
+    //list of all the usernames
     name : ["Kambholl"],
+    //list of unencrypted and very insecure passwords
     password : ["12345"],
+    //when was this user last logged in
     lastLogin : ["Wed Apr 11 2018 13:07:57 GMT+0000 (Greenwich Standard Time)"],
+    //for storing the ip address, witch I have no idea why, but might be useful later
     ip : 0,
+    //returns the id of the user if he exists
     userExists : function(username){
       for(var i = 0 ; i < this.name.length ; i++){
         if(this.name[i] === username){
+          //hooray we have a user,...!
           return i;
         }
       }
+      //he did not exist,... poor bastard!
       return -1;
     },
+    //should log the user in,... but untested so who knows?
     login : function(username, password){
       var id = this.userExists(username)
       if(id >= 0){
+        //very good and secure way of handeling passwords!
         if(this.password[id] === password){
           return id;
         }
       }
+      //ooohhh,... sorry but your not going to be logged in!
       return -1;
     },
+    //returns true if the user has logged in within the last hour
     loggedIn : function(id){
-    var ONE_HOUR = 3600000; /* ms */
-    if((new Date - this.lastLogin[id]) < ONE_HOUR){
-      return true;
-    } else {
-      return false;
+      var ONE_HOUR = 3600000; /* hour in milliseconds */
+      if((new Date - this.lastLogin[id]) < ONE_HOUR){
+        return true;
+      } else {
+        return false;
+      }
     }
-  }
   },
   HOMEHELP : {
     SHOPPINGLISTITEMS : {
@@ -166,7 +179,7 @@ var DATABASE = {
             ],
     USER: [{
       startDate: "Wed Apr 11 2018 13:07:57 GMT+0000 (Greenwich Standard Time)",
-      dateID : ["13042018", "14042018", "15042018", "16042018", "17042018"],
+      dateID : ["13042018", "14042018", "15042018", "16042018", "17042018", "18042018", "19042018", "20042018", "21042018", "22042018", "23042018", "24042018", "25042018", "26042018", "27042018", "28042018", "29042018", "30042018", "01052018", "02052018", "03052018", "04052018"],
       dinnerPlans : [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
     }]
   }
@@ -215,7 +228,9 @@ var HomeHelp = {
     //We need the username before setting up the page
     var username = window.location.href.split('?')[2];
     if(username === undefined){
-      //display create new user window, there was no user in the path
+      //display login screen, there was no user in the path
+      var logginScreen = "<div></div>";
+      $("#page").append(logginScreen);
     } else {
       //since we have a username we need userID
       userID = DATABASE.USER.userExists(username);
