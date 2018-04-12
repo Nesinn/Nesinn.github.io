@@ -7,17 +7,31 @@ $(document).ready(function() {
 
 // -- Page --
 var Page = {
+  page : "",
+  // loads the page user wants to goto
+  gotoPage : function(destination){
+    if(destination === ""){
+
+    }
+  },
   //Returns the Page object, acording to the path. If invalid or empty return menu
-  getPage : function () {
+  getPage : function (destination) {
+    if(destination != undefined){
+      this.page = destination;
+    }
     var path = window.location.href.split('?')[1];
     $("#page").empty();
-    if(path === undefined){
+    if(path === undefined && destination === undefined){
       return Menu;
-    } else if(path === "heimahjalp"){
-      return HomeHelp;
-    } else if(path === "hreifihjalp"){
+    } else if(path === "heimahjalp" || destination === "heimahjalp"){
+      if(User.LoggedIn()){
+        return HomeHelp;
+      } else {
+        return User;
+      }
+    } else if(path === "hreifihjalp" || destination === "hreifihjalp"){
       return MoveHelp;
-    } else if(path === "user"){
+    } else if(path === "user" || destination === "user"){
       return User;
     } else {
       return Menu;
@@ -303,7 +317,7 @@ var HomeHelp = {
         this.setDay(displayDay);
       } else {
         //display login screen, there was no user in the path and no user was logged in
-        window.location.href = "https://nesinn.github.io/?user";
+        Page.getPage("heimahjalp");
       }
     },
   //gets a date and changes accoringly.
