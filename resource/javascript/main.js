@@ -97,7 +97,7 @@ var DATABASE = {
   }
   },
   HOMEHELP : {
-    shoppingListItems : {
+    SHOPPINGLISTITEMS : {
       mainIngrediant : ["Fiskur", "Kjúklingur", "Kjöt", "Pasta"],
       vegetables : ["kál", "gúrka", "tómatar", "laukur", "papríka", "karteflur"],
       sauce : ["tómatsósa", "sinnep", "kokteilsósa", "köld bernessósa", "piparsósa", "hvítlaukssósa"],
@@ -105,7 +105,7 @@ var DATABASE = {
       sideDish : ["franskar"],
       bathroomItems : ["tannkrem", "klósettpappír", "Sturtusápa", "Handsápa"]
     },
-    dinner : [{ name : "Kjúklingaréttur", ingredients : []},
+    DINNER : [{ name : "Kjúklingaréttur", ingredients : []},
               { name : "Makkarónuréttur", ingredients : []},
               { name : "Soðin Fiskur", ingredients : []},
               { name : "Samlokur", ingredients : []},
@@ -142,7 +142,8 @@ var DATABASE = {
             ],
     USER: [{
       startDate: "Wed Apr 11 2018 13:07:57 GMT+0000 (Greenwich Standard Time)",
-      dinnerPlans: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+      dateID : [],
+      dinnerPlans : [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
     }]
   }
 };
@@ -183,50 +184,57 @@ var Menu = {
 
 //Heimahjalp page object
 var HomeHelp = {
+  userID : -1,
   displayDay : "",
+  displayDinner : -1,
   display : function() {
-    var userID = -1;
     //We need the username before setting up the page
     var username = window.location.href.split('?')[2];
     if(username === undefined){
       //display create new user window, there was no user in the path
     } else {
+      //since we have a username we need userID
       userID = DATABASE.USER.userExists(username);
-    }
-    if(userID <= 0){
-      //Put up heimahjalp page.
-      var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
-      var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
-      var breakfast = "<p>Morgunmatur: <span class=\"breakfast\"></span></p>";
-      var lunchbox = "<p>Nesti :<span class=\"lunchbox\"></span></p>";
-      var dinner = "<p>Kv&ouml;ldmatur: <span class=\"dinner\"></span></p>";
-      var project = "<p>Verkefni: <span class=\"project\"></span></p>";
-      var day = "<div class=\"day\">" + breakfast + lunchbox + dinner + project + "</div>";
-      var dagskra = "<div class=\"dagskra\">" + leftArrow + day + rightArrow + "</div>";
-      $("#page").append(dagskra);
-      //if user clicks arrow, we need to change the date.
-      $("div.arrow:first").on('click', function(e){
-        //since he clicked the left arrow go back a day.
-        HomeHelp.setDay(Calendar.yesterday(displayDay));
-      });
-      $("div.arrow:last").on('click', function(e){
-        //since he clicked the right arrow go ahead a day.
-        HomeHelp.setDay(Calendar.tomorrow(displayDay));
-      });
-      displayDay = new Date;
-      this.setDay(displayDay);
-      this.setDinner(displayDay);
-    } else {
-      //user does not exist
+      if(userID <= 0){
+        //Put up heimahjalp page.
+        var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
+        var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
+        var breakfast = "<p>Morgunmatur: <span class=\"breakfast\"></span></p>";
+        var lunchbox = "<p>Nesti :<span class=\"lunchbox\"></span></p>";
+        var dinner = "<p>Kv&ouml;ldmatur: <span class=\"dinner\"></span></p>";
+        var project = "<p>Verkefni: <span class=\"project\"></span></p>";
+        var day = "<div class=\"day\">" + breakfast + lunchbox + dinner + project + "</div>";
+        var dagskra = "<div class=\"dagskra\">" + leftArrow + day + rightArrow + "</div>";
+        $("#page").append(dagskra);
+        //if user clicks arrow, we need to change the date.
+        $("div.arrow:first").on('click', function(e){
+          //since he clicked the left arrow go back a day.
+          if(displayDinner === 0){
+            displayDinner = DATABASE.HOMEHELP.USER[userID].dinnerPlans.length;
+          } else {
+            displayDinner = displayDinner - 1;
+          }
+          HomeHelp.setDay(Calendar.yesterday(displayDay), displayDinner);
+        });
+        $("div.arrow:last").on('click', function(e){
+          //since he clicked the right arrow go ahead a day.
+          HomeHelp.setDay(Calendar.tomorrow(displayDay), displayDinner + 1);
+        });
+        displayDay = new Date;
+        this.setDay(displayDay);
+      } else {
+        //user does not exist
+      }
     }
   },  
-  setDinner : function(date){
-    //$(".dinner").append(this.dinner[0].name);
-  },
   //gets a date and changes accoringly.
-  setDay : function(date) {
+  setDay : function(date, dinnerID) {
     //check newDate if it is a date!
     displayDay = date;
+    dishNumber = DATABASE.HOMEHELP.USER[userID].startDate - new Date;
+    console.log(dishNumber);
+    var dinner = DATABASE.HOMEHELP.DINNER[DATABASE.HOMEHELP.USER[userID].dinnerPlans[0]].name;
+    $(".dinner").text(dinner);
     $("#date").text(Calendar.getDayMdayMonth(displayDay));
   }
 };
