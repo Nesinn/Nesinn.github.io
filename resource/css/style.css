@@ -45,6 +45,34 @@ body {
   flex-flow: column;
 }
 
+/* Login */
+.login-container{
+  background-color: lightblue;
+  border-radius: 3rem;
+  display: flex;
+  width: 50%;
+  height: 40%;
+  align-self: center;
+  justify-content: flex-start;
+  flex-flow: column;
+  align-items: center;
+  border: 0.5rem solid steelblue;
+}
+.login-message, .login-username, .login-password{
+  margin-top: 1rem;
+}
+.login-submit{
+  margin-top: 4rem;
+  margin-bottom: 3rem;
+}
+input{
+  height: 2rem;
+}
+.login-error{
+  font-size: 1rem;
+  color: red;
+}
+
 /* Menu */
 .menu {
   align-self: center;

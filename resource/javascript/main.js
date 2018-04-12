@@ -1,9 +1,30 @@
 $(document).ready(function() {
   //Get the page we want to display and load.
-  var page = getPage();
+  var page = Page.getPage();
   //Append the page to the site
   page.display();
 });
+
+// -- Page --
+var Page = {
+  //Clears the current page.
+  clearPage : function(){
+    $("#page").empty();
+  },
+  //Returns the Page object, acording to the path. If invalid or empty return menu
+  getPage : function () {
+    var path = window.location.href.split('?')[1];
+    if(path === undefined){
+      return Menu;
+    } else if(path === "heimahjalp"){
+      return HomeHelp;
+    } else if(path === "hreifihjalp"){
+      return MoveHelp;
+    } else {
+      return Menu;
+    }
+  }
+};
 
 // -- Calendar --
 var Calendar = {
@@ -117,6 +138,7 @@ var DATABASE = {
       if(id >= 0){
         //very good and secure way of handeling passwords!
         if(this.password[id] === password){
+          this.lastLogin[id] = new Date;
           return id;
         }
       }
@@ -187,25 +209,59 @@ var DATABASE = {
 
 // --  Login Factor  --
 var User = {
-  id : 0,
-  name : "",
-  ip : 0,
-  homeHelpValues : [{
-    startDate: Date,
-    dinnerPlans: []
-  }],
+  user : {
+    id : -1,
+    name : "",
+    ip: 00000
+  },
+  //Returns the user, or a empty one if not logged in.
+  getUser : function(){
+    return this.user;
+  },
+  //Append the login to the page
+  display : function(){
+    var loginMessage = "<div class=\"login-message\"><p>Velkominn!</p></div>";
+    var loginUsername = "<div class=\"login-username\"><p>Notendanafn: <input type=\"text\" class=\"username\"></p></div>";
+    var loginPassword = "<div class=\"login-password\"><p>Lykilorð: <input type=\"text\" class=\"password\"></p></div>";
+    var loginError = "<div><span class=\"login-error\"></span></div>";
+    var loginSubmit = "<div class=\"login-submit\"><a class=\"loginButton\">Innskrá</a><a>Nýskrá</a></div>"
+    var loginContainer = "<div class=\"login-container\">" + loginMessage + loginUsername + loginPassword + loginError + loginSubmit + "</div>";
+    $("#page").append(loginContainer);
+    $(".loginButton").on('click', function(e){
+      //since he clicked the left arrow go back a day.
+      var usr = document.getElementsByTagName("input")[0].value;
+      var psw = document.getElementsByTagName("input")[1].value;
+      if(User.login(usr, psw)){
+        //user is logged in. Clear screen and display Menu.
+        Page.clearPage();
+        Menu.display();
+      } else {
+        $(".login-error").text("-- Notendanafn ekki til og/eða rangt lykilorð --");
+      }
+    });
+  },
+  //returns true if username and password is correct.
   login : function(username, password){
-    var id =DATABASE.USER.login(username, password)
+    var id = DATABASE.USER.login(username, password)
     if(id >= 0){
-      DATABASE.USER.lastLogin[this.id] = new Date;
-      this.id = id;
-      this.name = DATABASE.USER.name[id];
-      this.ip = 123456789;
-      this.homeHelpValues.startDate = DATABASE.USER.homeHelpValues.startDate[id];
-      this.homeHelpValues.dinnerPlans = DATABASE.USER.homeHelpValues.dinnerPlans[id];
+
+      this.user.id = id;
+      this.user.name = DATABASE.USER.name[id];
+      this.user.ip = 123456789;
+      return true;
     } else {
-      //display error message. wrong usernmae / password
+      //User does not excist or password is incorrrect or both.
+      return false;
     }
+  },
+  //Returns true if logged in
+  loggedIn : function(){
+    if(this.user.id >= 0){
+      if(DATABASE.USER.loggedIn(this.user.id)){
+        return true;
+      }
+    }
+    return false;
   }
 };
 
@@ -221,77 +277,70 @@ var Menu = {
 
 //Heimahjalp page object
 var HomeHelp = {
-  userID : -1,
-  //displayDay : "",
+  displayDay : "",
   displayDinner : -1,
   display : function() {
     //We need the username before setting up the page
-    var username = window.location.href.split('?')[2];
-    if(username === undefined){
-      //display login screen, there was no user in the path
-      var logginScreen = "<div></div>";
-      $("#page").append(logginScreen);
-    } else {
-      //since we have a username we need userID
-      userID = DATABASE.USER.userExists(username);
-      if(userID <= 0){
-        //Put up heimahjalp page.
-        var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
-        var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
-        var breakfast = "<p>Morgunmatur: <span class=\"breakfast\"></span></p>";
-        var lunchbox = "<p>Nesti :<span class=\"lunchbox\"></span></p>";
-        var dinner = "<p>Kv&ouml;ldmatur: <span class=\"dinner\"></span></p>";
-        var project = "<p>Verkefni: <span class=\"project\"></span></p>";
-        var day = "<div class=\"day\">" + breakfast + lunchbox + dinner + project + "</div>";
-        var dagskra = "<div class=\"dagskra\">" + leftArrow + day + rightArrow + "</div>";
-        $("#page").append(dagskra);
-        //if user clicks arrow, we need to change the date.
-        $("div.arrow:first").on('click', function(e){
-          //since he clicked the left arrow go back a day.
-          HomeHelp.setDay(Calendar.yesterday(displayDay));
-        });
-        $("div.arrow:last").on('click', function(e){
-          //since he clicked the right arrow go ahead a day.
-          HomeHelp.setDay(Calendar.tomorrow(displayDay));
-        });
+    if(User.loggedIn()){
+      //We have a username, put up heimahjalp page.
+      var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
+      var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
+      var breakfast = "<p>Morgunmatur: <span class=\"breakfast\"></span></p>";
+      var lunchbox = "<p>Nesti :<span class=\"lunchbox\"></span></p>";
+      var dinner = "<p>Kv&ouml;ldmatur: <span class=\"dinner\"></span></p>";
+      var project = "<p>Verkefni: <span class=\"project\"></span></p>";
+      var day = "<div class=\"day\">" + breakfast + lunchbox + dinner + project + "</div>";
+      var dagskra = "<div class=\"dagskra\">" + leftArrow + day + rightArrow + "</div>";
+      $("#page").append(dagskra);
+      //if user clicks arrow, we need to change the date.
+      $("div.arrow:first").on('click', function(e){
+        //since he clicked the left arrow go back a day.
+        HomeHelp.setDay(Calendar.yesterday(displayDay));
+      });
+      $("div.arrow:last").on('click', function(e){
+        //since he clicked the right arrow go ahead a day.
+        HomeHelp.setDay(Calendar.tomorrow(displayDay));
+      });
         displayDay = new Date;
         this.setDay(displayDay);
       } else {
-        //user does not exist
+        //display login screen, there was no user in the path and no user was logged in
+        Page.clearPage();
+        User.display();
       }
-    }
-  },
+    },
   //gets a date and changes accoringly.
   setDay : function(date) {
-    //check newDate if it is a date!
-    if(Calendar.isDate(date)){
-      //save the date for the arrows.
-      displayDay = date;
-      //get the day ID (looks like a social securaty number).
-      var dayID = Calendar.getDayID(date);
-      //we need to set these incase we dont have food plans.
-      var dinnerIDforToday = -1;
-      var dinner = "";
-      //check if this user has food plans for the day
-      for(var i = 0 ; i < DATABASE.HOMEHELP.USER[userID].dateID.length ; i++){
-        if(DATABASE.HOMEHELP.USER[userID].dateID[i] === dayID){
-          //the user has a plan. then there is no need to continue searching.
-          dinnerIDforToday = i;
-          i = DATABASE.HOMEHELP.USER[userID].dateID.length;
-        }
+  //check newDate if it is a date!
+  if(Calendar.isDate(date) && User.LoggedIn()){
+    //save the date for the arrows.
+    displayDay = date;
+    //get the day ID (looks like a social securaty number).
+    var dayID = Calendar.getDayID(date);
+    //we need to set these incase we dont have food plans.
+    var dinnerIDforToday = -1;
+    var dinner = "";
+    var user = User.getUser();
+    //check if this user has food plans for the day
+    for(var i = 0 ; i < DATABASE.HOMEHELP.USER[user.id].dateID.length ; i++){
+      if(DATABASE.HOMEHELP.USER[user.id].dateID[i] === dayID){
+        //the user has a plan. then there is no need to continue searching.
+        dinnerIDforToday = i;
+        i = DATABASE.HOMEHELP.USER[user.id].dateID.length;
       }
-      if(dinnerIDforToday >= 0){
-        //since he has a plan we can get the name of the dinner
-        dinner = DATABASE.HOMEHELP.DINNER[DATABASE.HOMEHELP.USER[userID].dinnerPlans[dinnerIDforToday]].name;
-      }
-      //we change the text on the page, if there was no plan the string will be empty
-      $(".dinner").text(dinner);
-      $("#date").text(Calendar.getDayMdayMonth(date));
-    } else {
-      //the date test failed!
-      $("#date").text("Error: date value for setDay was not a date (" + date + ")");
     }
+    if(dinnerIDforToday >= 0){
+      //since he has a plan we can get the name of the dinner
+      dinner = DATABASE.HOMEHELP.DINNER[DATABASE.HOMEHELP.USER[user.id].dinnerPlans[dinnerIDforToday]].name;
+    }
+    //we change the text on the page, if there was no plan the string will be empty
+    $(".dinner").text(dinner);
+    $("#date").text(Calendar.getDayMdayMonth(date));
+  } else {
+    //the date test failed!
+    $("#date").text("Error: date value for setDay was not a date (" + date + "), or user was not logged in!");
   }
+}
 };
 
 var MoveHelp = {
@@ -301,20 +350,6 @@ var MoveHelp = {
         //Start/stop the excersise clock
         beatTimer();
       });
-  }
-};
-
-//Returns the Page object, acording to the path. If invalid or empty return menu
-function getPage() {
-  var path = window.location.href.split('?')[1];
-  if(path === undefined){
-    return Menu;
-  } else if(path === "heimahjalp"){
-    return HomeHelp;
-  } else if(path === "hreifihjalp"){
-    return MoveHelp;
-  } else {
-    return Menu;
   }
 };
 
