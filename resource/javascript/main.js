@@ -1,40 +1,37 @@
 $(document).ready(function() {
-  //Get the page we want to display and load.
-  var page = Page.getPage();
-  //Append the page to the site
-  page.display();
+  //Start the page we want to display and load.
+  Page.getPage();
 });
 
 // -- Page --
 var Page = {
   page : "",
-  // loads the page user wants to goto
-  gotoPage : function(destination){
-    if(destination === ""){
-
-    }
-  },
   //Returns the Page object, acording to the path. If invalid or empty return menu
   getPage : function (destination) {
-    if(destination != undefined){
+    var path = window.location.href.split('?')[1];
+    if(path === undefined){
+      path = "";
+    } else {
+      this.page = path;
+    }
+    if(destination === undefined){
+      destination = "";
+    } else {
       this.page = destination;
     }
-    var path = window.location.href.split('?')[1];
     $("#page").empty();
-    if(path === undefined && destination === undefined){
-      return Menu;
-    } else if(path === "heimahjalp" || destination === "heimahjalp"){
-      if(User.LoggedIn()){
-        return HomeHelp;
+    if(path === "heimahjalp" || destination === "heimahjalp" || this.page === "heimahjalp"){
+      if(User.loggedIn()){
+        return HomeHelp.display();
       } else {
-        return User;
+        return User.display();
       }
-    } else if(path === "hreifihjalp" || destination === "hreifihjalp"){
-      return MoveHelp;
-    } else if(path === "user" || destination === "user"){
-      return User;
+    } else if(path === "hreifihjalp" || destination === "hreifihjalp" || this.page === "hreifihjalp"){
+      return MoveHelp.display();
+    } else if(path === "user" || destination === "user" || this.page === "user"){
+      return User.display();
     } else {
-      return Menu;
+      return Menu.display();
     }
   }
 };
@@ -245,7 +242,7 @@ var User = {
       var usr = document.getElementsByTagName("input")[0].value;
       var psw = document.getElementsByTagName("input")[1].value;
       if(User.login(usr, psw)){
-        //user is logged in. Clear screen and display Menu.
+        //user is logged in. Load the page he wants.
         Page.getPage();
       } else {
         $(".login-error").text("-- Notendanafn ekki til og/eða rangt lykilorð --");
@@ -280,10 +277,18 @@ var User = {
 //Menu page object
 var Menu = {
   display : function() {
-    var heimahjalp = "<a href=\"https://nesinn.github.io/?heimahjalp\">Heimahjalp</a>";
-    var hreyfihjalp = "<a href=\"https://nesinn.github.io/?hreifihjalp\">Hreyfihjalp</a>";
+    var heimahjalp = "<a class=\"heima-hjalp\">Heimahjalp</a>";
+    var hreyfihjalp = "<a class=\"hreifi-hjalp\">Hreyfihjalp</a>";
     var googledocs = "<a href=\"https:\/\/docs.google.com/document/d/1Y13UHfQHlWZ8VoAYb-OfVyFA-VGcokouLb4m-34KQHk/edit#heading=h.q71z80o3nmah\">Codecskjalid</a>"
     $("#page").append("<div class=\"menu\">" + heimahjalp + hreyfihjalp + googledocs + "</div>");
+    $(".heima-hjalp").on('click', function(e){
+      //Load homehelp page
+      Page.getPage("heimahjalp");
+    });
+    $(".hreifi-hjalp").on('click', function(e){
+      //Load hreifihjalp page
+      Page.getPage("hreifihjalp");
+    });
   }
 };
 
@@ -323,7 +328,7 @@ var HomeHelp = {
   //gets a date and changes accoringly.
   setDay : function(date) {
   //check newDate if it is a date!
-  if(Calendar.isDate(date) && User.LoggedIn()){
+  if(Calendar.isDate(date) && User.loggedIn()){
     //save the date for the arrows.
     displayDay = date;
     //get the day ID (looks like a social securaty number).
