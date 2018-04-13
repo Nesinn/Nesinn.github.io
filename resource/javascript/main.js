@@ -33,6 +33,13 @@ var Page = {
     } else {
       return Menu.display();
     }
+  },
+  loadToolbar : function(addToToolbar){
+    if(addToToolbar === undefined){
+      addToToolbar = "";
+    }
+    var toolbar = "<div id=\"toolbar\">"+ addToToolbar + "</p></div>";
+    $("#top-page").append(toolbar);
   }
 };
 
@@ -300,6 +307,7 @@ var HomeHelp = {
     //We need the username before setting up the page
     if(User.loggedIn()){
       //We have a username, put up heimahjalp page.
+      Page.loadToolbar("<p id=\"date\">");
       var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
       var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
       var breakfast = "<p>Morgunmatur: <span class=\"breakfast\"></span></p>";

@@ -7,12 +7,14 @@
     <link rel="stylesheet" type="text/css" href="./resource/css/style.css">
   </head>
   <body>
-    <div class="toolbar">
-      <p id="clock"></p>
-      <p id="date"></p>
+    <div id="top-page">
+      <!-- Toolbar content-->
     </div>
     <div id="page">
       <!-- Page content -->
+    </div>
+    <div id="footer">
+      <!-- Footer content -->
     </div>
     <!-- Java files must be last to render -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>

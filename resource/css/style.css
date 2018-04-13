@@ -23,7 +23,7 @@ body {
   font-size: 2rem;
 }
 
-.toolbar {
+#toolbar {
 	background-color: white; /* Duuhh */
   display: flex; /* So you can use flex (justify-content) */
   justify-content: center; /* split into 2 secrions */
