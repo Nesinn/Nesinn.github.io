@@ -86,9 +86,37 @@ input{
 }
 
 /* Heimahjalp */
-.dagskra {
-  padding-top: 12rem;/* 4rem; /* To make the top of the page not go under the toolbar */
+.page {
+  margin: 1rem;
   display: flex;
+  flex-flow: column;
+}
+.selection {
+  display: flex;
+  justify-content: space-between;
+}
+.settings img{
+  width: 1rem;
+}
+.week {
+  display: flex;
+  justify-content: space-between;
+}
+.browse {
+
+}
+.mealToday {
+  display: flex;
+  flex-flow: column;
+  align-content: center;
+  justify-content: center;
+}
+.mealimg img {
+  width: 4rem;
+}
+/*.dagskra {
+  padding-top: 12rem;/* 4rem; /* To make the top of the page not go under the toolbar */
+/*  display: flex;
   justify-content: space-between;
   align-items: center;
 }
@@ -99,3 +127,4 @@ input{
 .arrow:hover {
   color: steelblue;
 }
+*/

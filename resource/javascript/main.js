@@ -53,7 +53,12 @@ var Calendar = {
   isDate : function(date){
     return (date instanceof Date);
   },
-  //Ruturns Day of Week Day og month and month
+  //Returns name of Today
+  getToday : function(){
+    var date = new Date;
+    return this.iceDays[date.getDay()];
+  },
+  //Returns Day of Week Day and month
   getDayMdayMonth : function(newDate){
     return this.iceDays[newDate.getDay()] + " " + newDate.getDate() + ". " + this.iceMonths[newDate.getMonth()];
   },
@@ -65,7 +70,7 @@ var Calendar = {
     var s = addZero(today.getSeconds());
     return (h + ":" + m + ":" + s);
   },
-  //Returns the number with 0 if it´s below 10.
+  //Returns the number with 0 in front if it is below 10.
   addZero : function(num){
     if(num < 10){
       return "0" + num;
@@ -82,6 +87,47 @@ var Calendar = {
       return (d + m + y);
     } else {
       return date;
+    }
+  },
+  //Retunrns start of week
+  getStartOfWeek : function(date){
+    if(this.isDate(date)){
+      var dayOfWeek = date.getDay();
+      if(dayOfWeek != 0){
+        for(var i = dayOfWeek ; i > 0 ; i--){
+        date = this.yesterday(date);
+      }
+    } 
+    return date;
+    }
+  },
+  //Retruns end of week
+  getEndOfWeek : function(date){
+    if(this.isDate(date)){
+      var dayOfWeek = date.getDay();
+      if(dayOfWeek != 6){
+        for(var i = dayOfWeek ; i < 6 ; i++){
+        date = this.tomorrow(date);
+      }
+    } 
+    return date;
+    }
+  },
+  //Returns the current week format monday-sunday 1-7. January or 31.01-06.02
+  getWeek : function(date){
+    if(this.isDate(date)){
+      var day = new Date;
+      var startOfWeek = this.getStartOfWeek(day);
+      var endOfWeek = this.getEndOfWeek(day);
+      var week = "";
+      if(startOfWeek.getMonth() == this.addZero(endOfWeek.getMonth())){
+        week = this.addZero(startOfWeek.getDate()) + "-" + this.addZero(endOfWeek.getDate()) + "." + this.iceMonths[endOfWeek.getMonth()];
+      } else {
+        var sow = this.addZero(startOfWeek.getDate()) + "." + this.addZero(startOfWeek.getMonth() + 1);
+        var eow = this.addZero(endOfWeek.getDate()) + "." + this.addZero(endOfWeek.getMonth()) + 1;
+        week = sow + " - " + eow;
+      }
+      return week;
     }
   },
   // returns the day before given date.
@@ -218,7 +264,7 @@ var DATABASE = {
             ],
     USER: [{
       startDate: "Wed Apr 11 2018 13:07:57 GMT+0000 (Greenwich Standard Time)",
-      dateID : ["13042018", "14042018", "15042018", "16042018", "17042018", "18042018", "19042018", "20042018", "21042018", "22042018", "23042018", "24042018", "25042018", "26042018", "27042018", "28042018", "29042018", "30042018", "01052018", "02052018", "03052018", "04052018"],
+      dateID : ["09042019", "11042019", "12042019", "13042019", "14042019", "15042019", "16042019", "17042019", "18042019", "19042019", "20042019", "21042019", "22042019", "23042019", "24042019", "25042019", "26042019", "27042019", "28042019", "29042019", "30042019", "21042019"],
       dinnerPlans : [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
     }]
   }
@@ -238,8 +284,8 @@ var User = {
   //Append the login to the page
   display : function(){
     var loginMessage = "<div class=\"login-message\"><p>Velkominn!</p></div>";
-    var loginUsername = "<div class=\"login-username\"><p>Notendanafn: <input type=\"text\" class=\"username\"></p></div>";
-    var loginPassword = "<div class=\"login-password\"><p>Lykilorð: <input type=\"text\" class=\"password\"></p></div>";
+    var loginUsername = "<div class=\"login-username\"><p>Notendanafn: <input type=\"text\" value=\"Kambholl\" class=\"username\"></p></div>";
+    var loginPassword = "<div class=\"login-password\"><p>Lykilorð: <input type=\"text\" value=\"12345\" class=\"password\"></p></div>";
     var loginError = "<div><span class=\"login-error\"></span></div>";
     var loginSubmit = "<div class=\"login-submit\"><a class=\"loginButton\">Innskrá</a><a>Nýskrá</a></div>"
     var loginContainer = "<div class=\"login-container\">" + loginMessage + loginUsername + loginPassword + loginError + loginSubmit + "</div>";
@@ -307,32 +353,24 @@ var HomeHelp = {
     //We need the username before setting up the page
     if(User.loggedIn()){
       //We have a username, put up heimahjalp page.
-      Page.loadToolbar("<p id=\"date\">");
+
       var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
       var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
-      var breakfast = "<p>Morgunmatur: <span class=\"breakfast\"></span></p>";
-      var lunchbox = "<p>Nesti :<span class=\"lunchbox\"></span></p>";
-      var dinner = "<p>Kv&ouml;ldmatur: <span class=\"dinner\"></span></p>";
-      var project = "<p>Verkefni: <span class=\"project\"></span></p>";
-      var day = "<div class=\"day\">" + breakfast + lunchbox + dinner + project + "</div>";
-      var dagskra = "<div class=\"dagskra\">" + leftArrow + day + rightArrow + "</div>";
-      $("#page").append(dagskra);
-      //if user clicks arrow, we need to change the date.
-      $("div.arrow:first").on('click', function(e){
-        //since he clicked the left arrow go back a day.
-        HomeHelp.setDay(Calendar.yesterday(displayDay));
-      });
-      $("div.arrow:last").on('click', function(e){
-        //since he clicked the right arrow go ahead a day.
-        HomeHelp.setDay(Calendar.tomorrow(displayDay));
-      });
-        displayDay = new Date;
-        this.setDay(displayDay);
-      } else {
+      var dagskra = "<div class=\"dagskra\">" + leftArrow + " day " + rightArrow + "</div>";
+      var displayDay = new Date;
+      var divO = "<div>";
+      var divC = "</div>"
+      var dagskra = divO + "" + divC;
+
+      //$("#page").append(dagskra);
+
+      this.setDay(displayDay);
+
+    } else {
         //display login screen, there was no user in the path and no user was logged in
         Page.getPage("heimahjalp");
-      }
-    },
+    }
+  },
   //gets a date and changes accoringly.
   setDay : function(date) {
   //check newDate if it is a date!
@@ -359,7 +397,8 @@ var HomeHelp = {
     }
     //we change the text on the page, if there was no plan the string will be empty
     $(".dinner").text(dinner);
-    $("#date").text(Calendar.getDayMdayMonth(date));
+    $("#week").text(Calendar.getWeek(date));
+    $("#date").text(Calendar.getToday());
   } else {
     //the date test failed!
     $("#date").text("Error: date value for setDay was not a date (" + date + "), or user was not logged in!");
@@ -439,4 +478,33 @@ function beatTimer() {
     countDown();
   }
 }
+
+
+      //Old page before change, keep for alittle time!
+      /*Page.loadToolbar("<p id=\"date\">");
+      var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
+      var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
+      var breakfast = "<p>Morgunmatur: <span class=\"breakfast\"></span></p>";
+      var lunchbox = "<p>Nesti :<span class=\"lunchbox\"></span></p>";
+      var dinner = "<p>Kv&ouml;ldmatur: <span class=\"dinner\"></span></p>";
+      var project = "<p>Verkefni: <span class=\"project\"></span></p>";
+      var day = "<div class=\"day\">" + breakfast + lunchbox + dinner + project + "</div>";
+      var dagskra = "<div class=\"dagskra\">" + leftArrow + day + rightArrow + "</div>";
+
+            $("#page").append(dagskra);
+      //if user clicks arrow, we need to change the date.
+      $("div.arrow:first").on('click', function(e){
+        //since he clicked the left arrow go back a day.
+        HomeHelp.setDay(Calendar.yesterday(displayDay));
+      });
+      $("div.arrow:last").on('click', function(e){
+        //since he clicked the right arrow go ahead a day.
+        HomeHelp.setDay(Calendar.tomorrow(displayDay));
+      });
+        displayDay = new Date;
+        this.setDay(displayDay);
+      } 
+      
+      var audio = new Audio('./resource/audio/beep.wav');
+      audio.play();
 */
