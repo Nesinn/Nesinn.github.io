@@ -14,6 +14,15 @@ a:hover {
   background-color: steelblue;
 }
 
+.settings {
+  height: 10%;
+  background-image: url("./icons/settings.png");
+  background-repeat:no-repeat;
+  background-size: contain;
+  width: 0%;
+  background-color: LightSteelBlue;
+}
+
 /* For this paticular page */
 
 body {
@@ -87,29 +96,39 @@ input{
 
 /* Heimahjalp */
 .page {
-  margin: 1rem;
+  padding-top: 2rem;
   display: flex;
+  align-items: center;
+  justify-content: flex-start;
   flex-flow: column;
 }
 .selection {
   display: flex;
-  justify-content: space-between;
+  flex-flow: row;
+  width: 80%;
 }
-.settings img{
-  width: 1rem;
+.leftselect {
+  flex-flow: column;
+  display: flex;
+  justify-content: space-between;
+  align-items: left;
+}
+
+.rightselect {
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: right;
 }
 .week {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 .browse {
 
 }
-.mealToday {
-  display: flex;
-  flex-flow: column;
-  align-content: center;
-  justify-content: center;
+.mealtoday {
+  justify-content: flex-start;
+  height: 40%;
 }
 .mealimg img {
   width: 4rem;

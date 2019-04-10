@@ -397,7 +397,7 @@ var HomeHelp = {
     }
     //we change the text on the page, if there was no plan the string will be empty
     $(".dinner").text(dinner);
-    $("#week").text(Calendar.getWeek(date));
+    $("#week").text("Vikan \n" + Calendar.getWeek(date));
     $("#date").text(Calendar.getToday());
   } else {
     //the date test failed!
