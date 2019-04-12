@@ -3,6 +3,64 @@ $(document).ready(function() {
   Page.getPage();
 });
 
+var HTMLmaker = {
+  aO : function(attribute){
+    if(attribute == undefined){
+      attribute = "";
+    }
+    return "<a" + attribute + ">";
+  },
+  aC : function(){
+    return "</a>"
+  },
+  divO : function(attribute){
+    if(attribute == undefined){
+      attribute = "";
+    }
+    return "<div" + attribute + ">";
+  },
+  divC : function(){
+    return "</div>"
+  },
+  IDMaker : function(IDName){
+    return " id=\"" + IDName + "\"";
+  },
+  classMaker : function(className){
+    return " class=\"" + className + "\"";
+  },
+  p : function(text){
+    return "<p>" + text + "</p>";
+  },
+  aClass : function(insideA, className){
+    return this.aO(this.classMaker(className)) + insideA + this.aC();
+  },
+  aID : function(insideA, IDName){
+    return this.aO(this.IDMaker(IDName)) + insideA + this.aC();
+  },
+  comment : function(comment){
+    return "<!-- " + comment + "-->";
+  },
+  divClass : function(insideDiv, className){
+    return this.divO(this.classMaker(className)) + insideDiv + this.divC();
+  },
+  divID : function(insideDiv, IDName){
+    return this.divO(this.IDMaker(IDName)) + insideDiv + this.divC();
+  },
+  div : function(insideDiv){
+    return this.divO() + insideDiv + this.divC();
+  },
+  loadToolbar : function(addToToolbar){
+    if(addToToolbar === undefined){
+      addToToolbar = "";
+    }
+    var toolbar = this.divID(this.p("homehelp"), "toolbar");
+    $("#top-page").append(toolbar);
+  },
+  columnOfButtons : function(){
+
+  },
+};
+
 // -- Page --
 var Page = {
   page : "",
@@ -33,13 +91,6 @@ var Page = {
     } else {
       return Menu.display();
     }
-  },
-  loadToolbar : function(addToToolbar){
-    if(addToToolbar === undefined){
-      addToToolbar = "";
-    }
-    var toolbar = "<div id=\"toolbar\">"+ addToToolbar + "</p></div>";
-    $("#top-page").append(toolbar);
   }
 };
 
@@ -354,15 +405,46 @@ var HomeHelp = {
     if(User.loggedIn()){
       //We have a username, put up heimahjalp page.
 
+      //Comments for the page
+      var commenttop = HTMLmaker.comment("Buttons for meal organizing");
+      var commentbottom = HTMLmaker.comment("Tells what day of the week");
+
+      //buttons for the page
+      var weekButton = HTMLmaker.aID("","week");
+      var BrowseButton = HTMLmaker.aID("","browse");
+      var dayNameButton = HTMLmaker.aID("","date");
+      var mealOfTodayButton = HTMLmaker.aID("","dinner");
+
+      //Screen layout
+      
+      var pageBottomDiv = HTMLmaker.divClass("","pb");
+      var splitTopBottom = HTMLmaker.divClass("","t2b");
+      var splitLeftRight = HTMLmaker.divClass("","l2r");
+      var topleftsection = HTMLmaker.divClass(weekButton,"leftselect");
+      var topRightSection = HTMLmaker.divClass(BrowseButton,"rightselect");
+      var topSection = HTMLmaker.divClass(weekButton,"topsection");
+      var bottomSection = HTMLmaker.divClass("mealtoday");
+
+
+      var pageTopDiv = HTMLmaker.divClass(topleftsection + topRightSection,"pt"); //top is split Vertically
+      var page = pageTopDiv + pageBottomDiv; //page is split horizontally
+
+      //Page: here I put the page together.
+      //var page = commenttop + topSection;
+      var displayDay = new Date;
+
+      /*
+
+      <span class="mealimg"><img src="./resource/image/food/pizza.jpg"></span>
       var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
       var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
       var dagskra = "<div class=\"dagskra\">" + leftArrow + " day " + rightArrow + "</div>";
-      var displayDay = new Date;
       var divO = "<div>";
       var divC = "</div>"
       var dagskra = divO + "" + divC;
+      */
 
-      //$("#page").append(dagskra);
+      $("#page").append(page);
 
       this.setDay(displayDay);
 
@@ -373,37 +455,38 @@ var HomeHelp = {
   },
   //gets a date and changes accoringly.
   setDay : function(date) {
-  //check newDate if it is a date!
-  if(Calendar.isDate(date) && User.loggedIn()){
-    //save the date for the arrows.
-    displayDay = date;
-    //get the day ID (looks like a social securaty number).
-    var dayID = Calendar.getDayID(date);
-    //we need to set these incase we dont have food plans.
-    var dinnerIDforToday = -1;
-    var dinner = "";
-    var user = User.getUser();
-    //check if this user has food plans for the day
-    for(var i = 0 ; i < DATABASE.HOMEHELP.USER[user.id].dateID.length ; i++){
-      if(DATABASE.HOMEHELP.USER[user.id].dateID[i] === dayID){
-        //the user has a plan. then there is no need to continue searching.
-        dinnerIDforToday = i;
-        i = DATABASE.HOMEHELP.USER[user.id].dateID.length;
+    //check newDate if it is a date!
+    if(Calendar.isDate(date) && User.loggedIn()){
+      //save the date for the arrows.
+      displayDay = date;
+      //get the day ID (looks like a social securaty number).
+      var dayID = Calendar.getDayID(date);
+      //we need to set these incase we dont have food plans.
+      var dinnerIDforToday = -1;
+      var dinner = "";
+      var user = User.getUser();
+      //check if this user has food plans for the day
+      for(var i = 0 ; i < DATABASE.HOMEHELP.USER[user.id].dateID.length ; i++){
+        if(DATABASE.HOMEHELP.USER[user.id].dateID[i] === dayID){
+          //the user has a plan. then there is no need to continue searching.
+          dinnerIDforToday = i;
+          i = DATABASE.HOMEHELP.USER[user.id].dateID.length;
+        }
       }
+      if(dinnerIDforToday >= 0){
+        //since he has a plan we can get the name of the dinner
+        dinner = DATABASE.HOMEHELP.DINNER[DATABASE.HOMEHELP.USER[user.id].dinnerPlans[dinnerIDforToday]].name;
+        //here we can get image, recipe and other stuff for the dinner also, later on <------------------------------------------
+      }
+      //we change the text on the page, if there was no plan the string will be empty
+      $("#dinner").text(dinner);
+      $("#week").text("Vikan <br /> " + Calendar.getWeek(date));
+      $("#date").text(Calendar.getToday());
+    } else {
+      //the date test failed, or the user is not lodeg in.
+      $("#date").text("Error: date value for setDay was not a date (" + date + "), or user was not logged in!");
     }
-    if(dinnerIDforToday >= 0){
-      //since he has a plan we can get the name of the dinner
-      dinner = DATABASE.HOMEHELP.DINNER[DATABASE.HOMEHELP.USER[user.id].dinnerPlans[dinnerIDforToday]].name;
-    }
-    //we change the text on the page, if there was no plan the string will be empty
-    $(".dinner").text(dinner);
-    $("#week").text("Vikan \n" + Calendar.getWeek(date));
-    $("#date").text(Calendar.getToday());
-  } else {
-    //the date test failed!
-    $("#date").text("Error: date value for setDay was not a date (" + date + "), or user was not logged in!");
   }
-}
 };
 
 var MoveHelp = {
