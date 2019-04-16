@@ -7,6 +7,8 @@ a {
   border-radius: 0.5rem;
   margin: 1rem;
   padding: 1rem;
+  width: 90%;
+  align-self: center;
   transition: background-color 0.7s linear 0.1s;
 }
 
@@ -15,7 +17,7 @@ a:hover {
 }
 
 .settings {
-  height: 10%;
+  height: 0%;
   background-image: url("./icons/settings.png");
   background-repeat:no-repeat;
   background-size: contain;
@@ -29,13 +31,13 @@ body {
   cursor: default;
 	background-color: gray; /* well you choose it, had it like this to see the toolbar more clearly */
   max-width: 100%; /* To make sure content does not go bigger then screen size */
-  font-size: 2rem;
+  font-size: 200%;
 }
 
 #toolbar {
 	background-color: white; /* Duuhh */
   display: flex; /* So you can use flex (justify-content) */
-  justify-content: center; /* split into 2 secrions */
+  justify-content: space-between; /* split into 3 sections */
   align-items: center; /* So the items are in the center vertically in the toolbar */
   height: 4rem; /* The height the toolbar takes */
   position: fixed; /* Does not scroll with page */
@@ -46,43 +48,31 @@ body {
 .vertical-split { /* This splits the childs vertically */
   display: flex;
   flex-direction: row;
-}
-
-.vertical-split .vs-left { /* this it the left child in a vertical split */
 
 }
 
-.vertical-split .vs-right { /* this it the right child in a vertical split */
-  
+.vs-left, .vs-right { /* these are the childs in a vertical split */
+  margin: 4rem;
 }
 
 .horizontal-split { /* This splits the childs horizontally */
   display: flex;
   flex-direction: column;
+  align-self: center;
 }
 
-.horizontal-split .hs-top { /* this it the top child in a horizontal split */
-
-}
-
-.horizontal-split .hs-bottom { /* this it the bottom child in a horizontal split */
+.hs-top, .hs-bottom { /* these are the childs in a horizontal split */
 
 }
 
-.pt { /* top content on page, when going for top and bottom*/
-  background-color: yellow;
-  height: 45%;
-  width: 100%;
-  margin: auto;
-  text-align: center;
+.drop-down-selections { /* all items inside container are in a column */
+  display: flex;
+  flex-direction: column;
+  margin: 2rem;
 }
 
-.pb { /* bottom content on page, when going for top and bottom*/
-  background-color: red;
-  height: 45%;
-  width: 100%;
-  margin: auto;
-  text-align: center;
+.drop-down-selections * { /* Select all childs of the parents */
+  margin: 0rem;
 }
 
 #date {
@@ -97,11 +87,11 @@ body {
 }
 
 /* Login */
-.login-container{
+.login-container {
   background-color: lightblue;
   border-radius: 3rem;
   display: flex;
-  width: 50%;
+  width: 80%;
   height: 40%;
   align-self: center;
   justify-content: flex-start;
@@ -109,32 +99,31 @@ body {
   align-items: center;
   border: 0.5rem solid steelblue;
 }
-.login-message, .login-username, .login-password{
+.login-message, .login-username, .login-password {
   margin-top: 1rem;
 }
-.login-submit{
+.login-submit {
   margin-top: 4rem;
   margin-bottom: 3rem;
 }
-input{
+input {
   height: 2rem;
 }
-.login-error{
+.login-error {
   font-size: 1rem;
   color: red;
 }
 
 /* Menu */
 .menu {
+  width: 80%;
   align-self: center;
   background-color: teal;
   border-radius: 2rem;
   display: flex;
   flex-flow: row;
 }
-.menu a {
 
-}
 
 /* Heimahjalp */
 .page {
@@ -161,7 +150,7 @@ input{
   justify-content: space-between;
   align-items: right;
 }
-.week {
+.week{
   display: flex;
   justify-content: space-around;
 }
@@ -189,3 +178,39 @@ input{
   color: steelblue;
 }
 */
+
+@media(max-width: 755px) {
+  p {
+    font-size: 1rem;
+  }
+  a {
+    display: flex;
+    padding: 0.2rem;
+    font-size: 1rem;
+    margin: 0.1rem;
+  }
+  input {
+    width: 90%;
+  }
+  .settings {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+  .menu {
+    flex-flow: column;
+    border-radius: 0.5rem;
+  }
+  .login-container {
+    align-items: normal;
+  }
+  .login-submit {
+    display: flex;
+  }
+  .login-message, .login-username, .login-password {
+    margin-left: 1rem;
+  }
+  .vs-left, .vs-right{ /* this it the left child in a vertical split */
+    margin: 0.1rem;
+  }
+
+}

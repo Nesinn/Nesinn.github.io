@@ -53,7 +53,7 @@ var HTMLmaker = {
     if(addToToolbar === undefined){
       addToToolbar = "";
     }
-    var toolbar = this.divID(this.p("homehelp"), "toolbar");
+    var toolbar = this.divID(addToToolbar, "toolbar");
     $("#top-page").append(toolbar);
   },
   verticalSplit : function(left, right){
@@ -62,8 +62,8 @@ var HTMLmaker = {
   horizontalSplit : function(top, bottom){
     return this.divClass(this.divClass(top, "hs-top") + this.divClass(bottom, "hs-bottom"), "horizontal-split");
   },
-  columnOfButtons : function(){
-
+  dropDownSelection : function(selections){
+    return this.divClass(selections, "drop-down-selections");
   },
 };
 
@@ -411,29 +411,27 @@ var HomeHelp = {
     if(User.loggedIn()){
       //We have a username, put up heimahjalp page.
 
+      //toolbar
+      var empty = HTMLmaker.p(""); //this is to create nothing that will be replaced with backarrow to keep the format of page.
+      var appName = HTMLmaker.p("Home Help"); //The name displayed in the middle of the toolbar.
+
       //Comments for the page
       var commenttop = HTMLmaker.comment("Buttons for meal organizing");
       var commentbottom = HTMLmaker.comment("Tells what day of the week");
 
       //buttons for the page
-      var settings = HTMLmaker.aID("", "settings"); //displays clickable settings logo
+      var settings = HTMLmaker.aClass("", "settings"); //displays clickable settings logo
       var weekButton = HTMLmaker.aID("","week"); //displays Week and date of monday-sunday
       var BrowseButton = HTMLmaker.aID("","browse"); //displays dinner ideas for your planing
       var dayNameButton = HTMLmaker.aID("","dayName"); //displays the name of today
       var mealOfTodayButton = HTMLmaker.aID("","dinner"); //displays what was planned for todaysd
-
-      //Page sections
-      var pageBottomDiv = HTMLmaker.divClass("","pb");
-      var splitTopBottom = HTMLmaker.divClass("","t2b");
-      var splitLeftRight = HTMLmaker.divClass("","l2r");
-      var topleftsection = HTMLmaker.divClass(weekButton,"leftselect");
-      var topRightSection = HTMLmaker.divClass(BrowseButton,"rightselect");
-      var topSection = HTMLmaker.divClass(weekButton,"topsection");
-      var bottomSection = HTMLmaker.divClass("mealtoday");
+      var mealimg = HTMLmaker.aID("", "mealImg");
 
       //Page Layout
-      var pageTopDiv = HTMLmaker.verticalSplit(topleftsection + topRightSection); //top is split Vertically
-      var page = HTMLmaker.horizontalSplit(pageTopDiv + pageBottomDiv); //page is split horizontally
+      HTMLmaker.loadToolbar(empty + appName + settings);
+      var pageTopDiv = HTMLmaker.verticalSplit(weekButton, BrowseButton); //top is split Vertically
+      var pageBottomDiv = HTMLmaker.dropDownSelection(dayNameButton + mealOfTodayButton + mealimg);
+      var page = HTMLmaker.horizontalSplit(pageTopDiv, pageBottomDiv); //page is split horizontally
 
       var displayDay = new Date;
 
@@ -484,8 +482,10 @@ var HomeHelp = {
       }
       //we change the text on the page, if there was no plan the string will be empty
       $("#dinner").text(dinner);
-      $("#week").text("Vikan <br /> " + Calendar.getWeek(date));
+      $("#browse").text("skoða rétti");
+      $("#week").text("Vikan " + Calendar.getWeek(date));
       $("#dayName").text(Calendar.getToday());
+      
     } else {
       //the date test failed, or the user is not lodeg in.
       $("#date").text("Error: date value for setDay was not a date (" + date + "), or user was not logged in!");
