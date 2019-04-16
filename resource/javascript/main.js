@@ -56,6 +56,12 @@ var HTMLmaker = {
     var toolbar = this.divID(this.p("homehelp"), "toolbar");
     $("#top-page").append(toolbar);
   },
+  verticalSplit : function(left, right){
+    return this.divClass(this.divClass(left, "vs-left") + this.divClass(right, "vs-right"), "vertical-split");
+  },
+  horizontalSplit : function(top, bottom){
+    return this.divClass(this.divClass(top, "hs-top") + this.divClass(bottom, "hs-bottom"), "horizontal-split");
+  }
   columnOfButtons : function(){
 
   },
@@ -410,13 +416,13 @@ var HomeHelp = {
       var commentbottom = HTMLmaker.comment("Tells what day of the week");
 
       //buttons for the page
-      var weekButton = HTMLmaker.aID("","week");
-      var BrowseButton = HTMLmaker.aID("","browse");
-      var dayNameButton = HTMLmaker.aID("","date");
-      var mealOfTodayButton = HTMLmaker.aID("","dinner");
+      var settings = HTMLmaker.aID("", "settings"); //displays clickable settings logo
+      var weekButton = HTMLmaker.aID("","week"); //displays Week and date of monday-sunday
+      var BrowseButton = HTMLmaker.aID("","browse"); //displays dinner ideas for your planing
+      var dayNameButton = HTMLmaker.aID("","dayName"); //displays the name of today
+      var mealOfTodayButton = HTMLmaker.aID("","dinner"); //displays what was planned for today
 
-      //Screen layout
-      
+      //Page sections
       var pageBottomDiv = HTMLmaker.divClass("","pb");
       var splitTopBottom = HTMLmaker.divClass("","t2b");
       var splitLeftRight = HTMLmaker.divClass("","l2r");
@@ -425,12 +431,10 @@ var HomeHelp = {
       var topSection = HTMLmaker.divClass(weekButton,"topsection");
       var bottomSection = HTMLmaker.divClass("mealtoday");
 
+      //Page Layout
+      var pageTopDiv = HTMLmaker.verticalSplit(topleftsection + topRightSection); //top is split Vertically
+      var page = HTMLmaker.horizontalSplit(pageTopDiv + pageBottomDiv); //page is split horizontally
 
-      var pageTopDiv = HTMLmaker.divClass(topleftsection + topRightSection,"pt"); //top is split Vertically
-      var page = pageTopDiv + pageBottomDiv; //page is split horizontally
-
-      //Page: here I put the page together.
-      //var page = commenttop + topSection;
       var displayDay = new Date;
 
       /*
@@ -481,7 +485,7 @@ var HomeHelp = {
       //we change the text on the page, if there was no plan the string will be empty
       $("#dinner").text(dinner);
       $("#week").text("Vikan <br /> " + Calendar.getWeek(date));
-      $("#date").text(Calendar.getToday());
+      $("#dayName").text(Calendar.getToday());
     } else {
       //the date test failed, or the user is not lodeg in.
       $("#date").text("Error: date value for setDay was not a date (" + date + "), or user was not logged in!");

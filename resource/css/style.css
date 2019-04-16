@@ -43,22 +43,46 @@ body {
   z-index: 1; /* To make it overflow the page content */
 }
 
-.pt { /* top content on page, when going for top and bottom*/
-  background-color: yellow;
-  height:45%;
-  width:100%;
-  background-color:#009900;
-  margin:auto;
-  text-align:center;
+.vertical-split { /* This splits the childs vertically */
+  display: flex;
+  flex-direction: row;
 }
 
-.pb { /* top content on page, when going for top and bottom*/
+.vertical-split .vs-left { /* this it the left child in a vertical split */
+
+}
+
+.vertical-split .vs-right { /* this it the right child in a vertical split */
+  
+}
+
+.horizontal-split { /* This splits the childs horizontally */
+  display: flex;
+  flex-direction: column;
+}
+
+.horizontal-split .hs-top { /* this it the top child in a horizontal split */
+
+}
+
+.horizontal-split .hs-bottom { /* this it the bottom child in a horizontal split */
+
+}
+
+.pt { /* top content on page, when going for top and bottom*/
+  background-color: yellow;
+  height: 45%;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+.pb { /* bottom content on page, when going for top and bottom*/
   background-color: red;
-  height:45%;
-  width:100%;
-  background-color:#990000;
-  margin:auto;
-  text-align:center;
+  height: 45%;
+  width: 100%;
+  margin: auto;
+  text-align: center;
 }
 
 #date {
