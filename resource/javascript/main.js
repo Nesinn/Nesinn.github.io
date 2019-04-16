@@ -61,7 +61,7 @@ var HTMLmaker = {
   },
   horizontalSplit : function(top, bottom){
     return this.divClass(this.divClass(top, "hs-top") + this.divClass(bottom, "hs-bottom"), "horizontal-split");
-  }
+  },
   columnOfButtons : function(){
 
   },
@@ -420,7 +420,7 @@ var HomeHelp = {
       var weekButton = HTMLmaker.aID("","week"); //displays Week and date of monday-sunday
       var BrowseButton = HTMLmaker.aID("","browse"); //displays dinner ideas for your planing
       var dayNameButton = HTMLmaker.aID("","dayName"); //displays the name of today
-      var mealOfTodayButton = HTMLmaker.aID("","dinner"); //displays what was planned for today
+      var mealOfTodayButton = HTMLmaker.aID("","dinner"); //displays what was planned for todaysd
 
       //Page sections
       var pageBottomDiv = HTMLmaker.divClass("","pb");
