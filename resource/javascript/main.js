@@ -321,7 +321,7 @@ var DATABASE = {
             ],
     USER: [{
       startDate: "Wed Apr 11 2018 13:07:57 GMT+0000 (Greenwich Standard Time)",
-      dateID : ["09042019", "11042019", "12042019", "13042019", "14042019", "15042019", "16042019", "17042019", "18042019", "19042019", "20042019", "21042019", "22042019", "23042019", "24042019", "25042019", "26042019", "27042019", "28042019", "29042019", "30042019", "21042019"],
+      dateID : ["09042019", "11042019", "12042019", "13042019", "14042019", "15042019", "16042019", "17042019", "18042019", "19042019", "20042019", "21042019", "22042019", "23042019", "24042019", "25042019", "26042019", "27042019", "28042019", "29042019", "30042019", "01052019"],
       dinnerPlans : [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
     }]
   }
@@ -444,11 +444,40 @@ var HomeHelp = {
         //append it to the page $("#page").append();
       });
       $("#week").on('click', function(e){
-        audio.play();
         //since he clicked the week button.
-        //get dinners for the week
-        //put in dropdown list HTMLmaker.dropDownSelection(items);
-        // append it to the page $("#page").append();
+        var user = User.getUser(); //We need to get the ID of the User
+        var day = Calendar.getStartOfWeek(displayDay); //Get the first day of the week (Sunday)
+        var dayId = ""; //To save the dayId for the database
+        var mealList = ""; //the list of items we want to append to the page
+        //get each day of the the week.
+        for(var i = 0 ; i < 7 ; i++){ 
+          dayID = Calendar.getDayID(day); //save the dayID of each day of the week
+          var dinnerIDforToday = -1;
+          var dinner = "";
+          //check if this user has food plans for the day
+          for(var p = 0 ; p < DATABASE.HOMEHELP.USER[user.id].dateID.length ; p++){
+            if(DATABASE.HOMEHELP.USER[user.id].dateID[p] === dayID){ //get dinners for the week
+              //the user has a plan. then there is no need to continue searching.
+              dinnerIDforToday = p;
+              p = DATABASE.HOMEHELP.USER[user.id].dateID.length;
+            }
+          }
+          if(dinnerIDforToday >= 0){ 
+            //since he has a plan we can get the name of the dinner
+            dinner = DATABASE.HOMEHELP.DINNER[DATABASE.HOMEHELP.USER[user.id].dinnerPlans[dinnerIDforToday]].name;
+            //here we can get image, recipe and other stuff for the dinner also, later on <------------------------------------------
+          } else {
+            //no plans for the day
+            dinner = "ekkert";
+          }
+          mealList = mealList + HTMLmaker.aClass(dinner, dayId);
+          day = Calendar.tomorrow(day); //get the day after that day
+        }
+        console.log(mealList);
+        //Clear the page
+        $("#page").empty();
+        //put in dropdown list and append it to the page 
+        $("#page").append(HTMLmaker.dropDownSelection(mealList));
       });
       $("#browse").on('click', function(e){
         audio.play();
