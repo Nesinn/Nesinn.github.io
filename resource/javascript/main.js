@@ -74,7 +74,7 @@ var Page = {
   getPage : function (destination) {
     var path = window.location.href.split('?')[1];
     if(path === undefined){
-      path = "";
+      path = "heimahjalp";
     } else {
       this.page = path;
     }
@@ -414,13 +414,14 @@ var HomeHelp = {
       //toolbar
       var empty = HTMLmaker.p(""); //this is to create nothing that will be replaced with backarrow to keep the format of page.
       var appName = HTMLmaker.p("Home Help"); //The name displayed in the middle of the toolbar.
+      var settings = HTMLmaker.aClass("", "settings"); //displays clickable settings logo
+      HTMLmaker.loadToolbar(empty + appName + settings);
 
       //Comments for the page
       var commenttop = HTMLmaker.comment("Buttons for meal organizing");
       var commentbottom = HTMLmaker.comment("Tells what day of the week");
 
       //buttons for the page
-      var settings = HTMLmaker.aClass("", "settings"); //displays clickable settings logo
       var weekButton = HTMLmaker.aID("","week"); //displays Week and date of monday-sunday
       var BrowseButton = HTMLmaker.aID("","browse"); //displays dinner ideas for your planing
       var dayNameButton = HTMLmaker.aID("","dayName"); //displays the name of today
@@ -428,7 +429,6 @@ var HomeHelp = {
       var mealimg = HTMLmaker.aID("", "mealImg");
 
       //Page Layout
-      HTMLmaker.loadToolbar(empty + appName + settings);
       var pageTopDiv = HTMLmaker.verticalSplit(weekButton, BrowseButton); //top is split Vertically
       var pageBottomDiv = HTMLmaker.dropDownSelection(dayNameButton + mealOfTodayButton + mealimg);
       var page = HTMLmaker.horizontalSplit(pageTopDiv, pageBottomDiv); //page is split horizontally
@@ -444,10 +444,21 @@ var HomeHelp = {
         //append it to the page $("#page").append();
       });
       $("#week").on('click', function(e){
+        //toolbar
+        $("#top-page").empty();
+        var backArrow = HTMLmaker.aClass("", "back-arrow"); //backarrow to go back to main page.
+        var location = HTMLmaker.p("Vikan"); //The name displayed in the middle of the toolbar.
+        var settings = HTMLmaker.aClass("", "settings"); //displays clickable settings logo
+        HTMLmaker.loadToolbar(backArrow + location + settings);
+        $("a.back-arrow").on('click', function(e){
+          Page.getPage("heimahjalp");
+        });
+
         //since he clicked the week button.
         var user = User.getUser(); //We need to get the ID of the User
+        var today = Calendar.getDayID(displayDay);//get the id of today for css preferences
         var day = Calendar.getStartOfWeek(displayDay); //Get the first day of the week (Sunday)
-        var dayId = ""; //To save the dayId for the database
+        var dayID = ""; //To save the dayId for the database
         var mealList = ""; //the list of items we want to append to the page
         //get each day of the the week.
         for(var i = 0 ; i < 7 ; i++){ 
@@ -470,7 +481,12 @@ var HomeHelp = {
             //no plans for the day
             dinner = "ekkert";
           }
-          mealList = mealList + HTMLmaker.aClass(dinner, dayId);
+          if(dayID == today){ //make to day a special color
+            var mealOfToday = HTMLmaker.aClass(Calendar.iceDays[i] + ": " + dinner, "today");
+            mealList = mealList + mealOfToday;
+          } else {
+            mealList = mealList + HTMLmaker.aClass(Calendar.iceDays[i] + ": " + dinner, dayID);
+          }
           day = Calendar.tomorrow(day); //get the day after that day
         }
         console.log(mealList);

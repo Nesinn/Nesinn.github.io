@@ -24,6 +24,14 @@ a:hover {
   width: 0%;
   background-color: LightSteelBlue;
 }
+.back-arrow {
+  height: 0%;
+  background-image: url("./icons/backarrow.png");
+  background-repeat:no-repeat;
+  background-size: contain;
+  width: 0%;
+  background-color: LightSteelBlue;
+}
 
 /* For page Layout */
 
@@ -164,6 +172,9 @@ input {
 .mealimg img {
   width: 4rem;
 }
+.today {
+  background-color: green;
+}
 /*.dagskra {
   padding-top: 12rem;/* 4rem; /* To make the top of the page not go under the toolbar */
 /*  display: flex;
@@ -193,6 +204,10 @@ input {
     width: 90%;
   }
   .settings {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+  .back-arrow {
     height: 1.5rem;
     width: 1.5rem;
   }
