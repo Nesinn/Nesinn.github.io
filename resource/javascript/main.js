@@ -435,18 +435,33 @@ var HomeHelp = {
 
       var displayDay = new Date;
 
-      /*
-
-      <span class="mealimg"><img src="./resource/image/food/pizza.jpg"></span>
-      var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
-      var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
-      var dagskra = "<div class=\"dagskra\">" + leftArrow + " day " + rightArrow + "</div>";
-      var divO = "<div>";
-      var divC = "</div>"
-      var dagskra = divO + "" + divC;
-      */
-
       $("#page").append(page);
+      var audio = new Audio('./resource/audio/fart.wav');
+      $("a.settings").on('click', function(e){
+        audio.play();
+        //since he clicked the settings button.
+        //layout the settings page
+        //append it to the page $("#page").append();
+      });
+      $("#week").on('click', function(e){
+        audio.play();
+        //since he clicked the week button.
+        //get dinners for the week
+        //put in dropdown list HTMLmaker.dropDownSelection(items);
+        // append it to the page $("#page").append();
+      });
+      $("#browse").on('click', function(e){
+        audio.play();
+        //since he clicked the browse button.
+        //show recipes and images for meals
+        //append it to the page $("#page").append();
+      });
+      $("div.hs-bottom").on('click', function(e){
+        audio.play();
+        //since he clicked the any of the meal of today buttons.
+        //show recipe and cooking method for the meal
+        //append it to the page $("#page").append();
+      });
 
       this.setDay(displayDay);
 
@@ -594,4 +609,13 @@ function beatTimer() {
       
       var audio = new Audio('./resource/audio/beep.wav');
       audio.play();
-*/
+
+      <span class="mealimg"><img src="./resource/image/food/pizza.jpg"></span>
+      var leftArrow = "<div class=\"arrow\"><p>&#8249;</p></div>";
+      var rightArrow = "<div class=\"arrow\"><p>&#8250;</p></div>";
+      var dagskra = "<div class=\"dagskra\">" + leftArrow + " day " + rightArrow + "</div>";
+      var divO = "<div>";
+      var divC = "</div>"
+      var dagskra = divO + "" + divC;
+      */
+
