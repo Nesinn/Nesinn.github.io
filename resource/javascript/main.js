@@ -102,6 +102,7 @@ var Page = {
 
 // -- Calendar --
 var Calendar = {
+  day : [{key : "01012019", dayOfWeek : 2, week : 1, month : 1, year: 2019, date : "Tue Jan 01 2019 00:00:00 GMT+0000 (Greenwich Mean Time)"}],
   //Names of the months in Icelandic
   iceMonths : ["Janúar", "Febrúar", "Mars", "Apríl", "Maí", "Juní", "Julí", "Ágúst", "September", "Október", "Nóvember", "Desember"],
   //Names of the Days in Icelandic
@@ -226,6 +227,17 @@ var Calendar = {
     } else {
       return date;
     }
+  },
+  write : function(){
+    var day = new Date(2019, 0, 1);
+    return {
+      key : this.getDayID(day), 
+      dayOfWeek : day.getDay(), 
+      week : 1, 
+      month : day.getMonth(), 
+      year: day.getYear() + 1900, 
+      date : day
+    };
   }
 };
 
