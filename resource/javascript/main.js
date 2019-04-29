@@ -291,7 +291,6 @@ var Calendar = {
         }
       }
     }
-    console.log(this.year);
   }
 };
 
