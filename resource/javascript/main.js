@@ -102,7 +102,9 @@ var Page = {
 
 // -- Calendar --
 var Calendar = {
-  day : [{key : "01012019", dayOfWeek : 2, week : 1, month : 1, year: 2019, date : "Tue Jan 01 2019 00:00:00 GMT+0000 (Greenwich Mean Time)"}],
+  //Each year contains months and weeks with starting date and end date
+  year : [],
+  day : [],
   //Names of the months in Icelandic
   iceMonths : ["Janúar", "Febrúar", "Mars", "Apríl", "Maí", "Juní", "Julí", "Ágúst", "September", "Október", "Nóvember", "Desember"],
   //Names of the Days in Icelandic
@@ -229,15 +231,67 @@ var Calendar = {
     }
   },
   write : function(){
-    var day = new Date(2019, 0, 1);
-    return {
-      key : this.getDayID(day), 
-      dayOfWeek : day.getDay(), 
-      week : 1, 
-      month : day.getMonth(), 
-      year: day.getYear() + 1900, 
-      date : day
+    var curYear = {
+      start : 0,
+      end : 0,
+      month : [],
+      week : [],
     };
+    var startOfMonthDay = 0;
+    var endOfMonthDay = 0;
+    var curMonth = 0;
+    var curDay = 0;
+    var days = new Date(2019, 0, 1);
+    for(var y = 0 ; y < 5 ; ){
+      for(var w = 1 ; w <= 53 ; w++){
+        var startOfWeekDay = curDay;
+        for(var d = days.getDay() ; d <= 7 ; d++){
+          //add the day to the infinite days array
+          this.day.push({
+            date : this.addZero(days.getDate()), 
+            dayOfWeek : d, 
+            week : w, 
+            month : days.getMonth(), 
+            year: days.getYear() + 1900,
+            plans: {}
+          });
+          days = Calendar.tomorrow(days);
+          if(days.getMonth() != curMonth){
+            curYear.month.push({
+              start : startOfMonthDay,
+              end : curDay
+            });
+            startOfMonthDay = curDay + 1;
+            curMonth++;
+            if(days.getYear() != y + 119){
+              curYear.end = curDay;
+              y++;
+              this.year.push(curYear);
+              curYear = {
+                start : curDay + 1,
+                end : 0,
+                month : [],
+                week : [],
+              };
+              curMonth = 0;
+            }
+          }
+          curDay++;
+        }
+        if(w > 51){
+          if(days.getYear() == 120 || days.getDay() == 1){
+            w = 54;
+          }
+        }
+        if(w != 54){
+          curYear.week.push({
+            start : startOfWeekDay,
+            end : curDay - 1
+          });
+        }
+      }
+    }
+    console.log(this.year);
   }
 };
 
@@ -501,7 +555,6 @@ var HomeHelp = {
           }
           day = Calendar.tomorrow(day); //get the day after that day
         }
-        console.log(mealList);
         //Clear the page
         $("#page").empty();
         //put in dropdown list and append it to the page 
