@@ -182,7 +182,7 @@ var Calendar = {
         week = this.addZero(startOfWeek.getDate()) + "-" + this.addZero(endOfWeek.getDate()) + "." + this.iceMonths[endOfWeek.getMonth()];
       } else {
         var sow = this.addZero(startOfWeek.getDate()) + "." + this.addZero(startOfWeek.getMonth() + 1);
-        var eow = this.addZero(endOfWeek.getDate()) + "." + this.addZero(endOfWeek.getMonth()) + 1;
+        var eow = this.addZero(endOfWeek.getDate()) + "." + this.addZero(endOfWeek.getMonth() + 1);
         week = sow + " - " + eow;
       }
       return week;
